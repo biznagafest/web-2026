@@ -6,28 +6,28 @@ import axios from "axios";
 interface CmsResponse {
   title: string;
   date: string;
-  tickets_url: string;
+  tickets_url: Nullable<string>;
   description: string;
   is_welcome_banner_enabled: boolean;
   socials: Socials;
   venue: Venue;
   sponsor_dossier: SponsorDossier;
-  last_edition: LastEdition;
-  faq: Faq[];
+  last_edition: Nullable<LastEdition>;
+  faq: Nullable<Faq[]>;
   footer_links: FooterLink[];
-  call_for_papers: CallForPapers;
-  previous_editions: PreviousEdition[];
-  team: Team[];
-  speakers: Speaker[];
-  hosts: Host[];
-  sponsors: Sponsor[];
-  tickets: Ticket[];
-  events: Event[];
+  call_for_papers: Nullable<CallForPapers>;
+  previous_editions: Nullable<PreviousEdition[]>;
+  team: Nullable<Team[]>;
+  speakers: Nullable<Speaker[]>;
+  hosts: Nullable<Host[]>;
+  sponsors: Nullable<Sponsor[]>;
+  tickets: Nullable<Ticket[]>;
+  events: Nullable<Event[]>;
   CompanyTicketsNotice: CompanyTicketsNotice;
-  schedule: ScheduleItem[];
-  raffles: Raffleitem[];
-  hall_of_fame: HallOfFameitem[];
-  tshirt: Tshirt;
+  schedule: Nullable<ScheduleItem[]>;
+  raffles: Nullable<Raffleitem[]>;
+  hall_of_fame: Nullable<HallOfFameitem[]>;
+  tshirt: Nullable<Tshirt>;
 }
 
 interface Tshirt {
@@ -217,40 +217,44 @@ function mapCmsResponseToData(response: CmsResponse): Data {
     title: response.title,
     date: new Date(response.date),
     description: response.description,
-    callForPapers: {
-      isEnabled: response.call_for_papers.is_enabled,
-      title: response.call_for_papers.title,
-      url: response.call_for_papers.url,
-    },
-    faq: response.faq,
+    callForPapers: response.call_for_papers
+      ? {
+          isEnabled: response.call_for_papers.is_enabled,
+          title: response.call_for_papers.title,
+          url: response.call_for_papers.url,
+        }
+      : { isEnabled: false, title: "", url: "" },
+    faq: response.faq ?? [],
     footerLinks: response.footer_links,
-    previousEditions: response.previous_editions,
-    ticketsUrl: response.tickets_url,
+    previousEditions: response.previous_editions ?? [],
+    ticketsUrl: response.tickets_url ?? "",
     welcomeBanner: {
       isEnabled: response.is_welcome_banner_enabled,
     },
     socials: mapSocialsToData(response.socials),
-    lastEdition: {
-      gallery: response.last_edition.gallery.map((picture) =>
-        prependHostnameToUrl(picture.url),
-      ),
-      lastEditionVideoUrl: response.last_edition.video_url || undefined,
-    },
-    speakers: response.speakers.map((speaker) => ({
+    lastEdition: response.last_edition
+      ? {
+          gallery: response.last_edition.gallery.map((picture) =>
+            prependHostnameToUrl(picture.url),
+          ),
+          lastEditionVideoUrl: response.last_edition.video_url || undefined,
+        }
+      : undefined,
+    speakers: (response.speakers ?? []).map((speaker) => ({
       name: speaker.name,
       picture: prependHostnameToUrl(speaker.picture.url),
       description: speaker.description || undefined,
       position: speaker.position || undefined,
       socials: mapSocialsToData(speaker.socials),
     })),
-    hosts: response.hosts.map((host) => ({
+    hosts: (response.hosts ?? []).map((host) => ({
       name: host.name,
       picture: prependHostnameToUrl(host.picture.url),
       description: host.description || undefined,
       position: host.position || undefined,
       socials: mapSocialsToData(host.socials),
     })),
-    sponsors: response.sponsors.map((sponsor) => ({
+    sponsors: (response.sponsors ?? []).map((sponsor) => ({
       name: sponsor.name,
       tier: sponsor.tier,
       url: sponsor.url,
@@ -267,7 +271,7 @@ function mapCmsResponseToData(response: CmsResponse): Data {
       en: prependHostnameToUrl(response.sponsor_dossier.english.url),
     },
     team: {
-      organizers: response.team
+      organizers: (response.team ?? [])
         .filter((teamMember) => teamMember.type === "organizer")
         .map((teamMember) => ({
           name: teamMember.name,
@@ -276,7 +280,7 @@ function mapCmsResponseToData(response: CmsResponse): Data {
           socials: mapSocialsToData(teamMember.socials),
           picture: prependHostnameToUrl(teamMember.picture.url),
         })),
-      staff: response.team
+      staff: (response.team ?? [])
         .filter((teamMember) => teamMember.type === "staff")
         .map((teamMember) => ({
           name: teamMember.name,
@@ -301,15 +305,15 @@ function mapCmsResponseToData(response: CmsResponse): Data {
         howToArriveByMetro: response.venue.how_to_arrive.by_subway,
       },
     },
-    tickets: response.tickets.map((ticket) => ({
+    tickets: (response.tickets ?? []).map((ticket) => ({
       name: ticket.name,
       price: ticket.price,
       isSoldOut: ticket.is_sold_out,
       notice: ticket.notice || undefined,
       perks: ticket.perks.map((perk) => perk.description),
-      url: response.tickets_url,
+      url: response.tickets_url ?? "",
     })),
-    events: response.events.map((event) => ({
+    events: (response.events ?? []).map((event) => ({
       name: event.name,
       type: event.type,
       description: event.description || undefined,
@@ -324,7 +328,7 @@ function mapCmsResponseToData(response: CmsResponse): Data {
       title: response.CompanyTicketsNotice.title,
       description: response.CompanyTicketsNotice.description,
     },
-    schedule: response.schedule.map((scheduleItem) => ({
+    schedule: (response.schedule ?? []).map((scheduleItem) => ({
       end: scheduleItem.time_end,
       kind: scheduleItem.kind,
       start: scheduleItem.time_start,
@@ -336,11 +340,11 @@ function mapCmsResponseToData(response: CmsResponse): Data {
       language: scheduleItem.language || undefined,
       topic: scheduleItem.topic || undefined,
     })),
-    raffles: response.raffles.map((raffle) => ({
+    raffles: (response.raffles ?? []).map((raffle) => ({
       description: raffle.description,
       picture: prependHostnameToUrl(raffle.picture.url),
     })),
-    hallOfFame: response.hall_of_fame.map((hallOfFameItem) => ({
+    hallOfFame: (response.hall_of_fame ?? []).map((hallOfFameItem) => ({
       name: hallOfFameItem.name,
       edition: hallOfFameItem.edition,
       picture: prependHostnameToUrl(hallOfFameItem.picture.url),
