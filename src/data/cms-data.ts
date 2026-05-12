@@ -208,8 +208,8 @@ const cmsHostname = CMS_URL;
 const cmsEndpoint = `${cmsHostname}/info`;
 
 export async function getDataFromCms(): Promise<Data> {
-  const response = await axios.get<CmsResponse>(cmsEndpoint);
-  return mapCmsResponseToData(response.data);
+  const response = await axios.get<{ data: CmsResponse }>(cmsEndpoint);
+  return mapCmsResponseToData(response.data.data);
 }
 
 function mapCmsResponseToData(response: CmsResponse): Data {
