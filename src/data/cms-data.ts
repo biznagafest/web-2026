@@ -296,7 +296,7 @@ function mapCmsResponseToData(response: CmsResponse): Data {
       address: response.venue.address,
       city: response.venue.city,
       mapUrl: response.venue.map_url,
-      pictures: response.venue.pictures.map((picture) =>
+      pictures: (response.venue.pictures ?? []).map((picture) =>
         prependHostnameToUrl(picture.url),
       ),
       howToArrive: {
