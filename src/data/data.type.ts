@@ -45,6 +45,7 @@ export interface Team {
 }
 
 export type SponsorTier =
+  | "platinum"
   | "gold"
   | "silver"
   | "bronze"
