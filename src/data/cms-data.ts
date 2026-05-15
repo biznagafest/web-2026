@@ -205,7 +205,7 @@ interface Perk {
 
 const cmsHostname = CMS_URL;
 
-const cmsEndpoint = `${cmsHostname}/info`;
+const cmsEndpoint = `${cmsHostname}/api/info`;
 
 export async function getDataFromCms(): Promise<Data> {
   const response = await axios.get<{ data: CmsResponse }>(cmsEndpoint);
