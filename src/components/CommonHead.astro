@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import { DATA } from "../data/data";
 
 interface Props {
   title: string;
@@ -10,6 +11,22 @@ interface Props {
 // const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { image = "/favicon.svg", description, title } = Astro.props;
+
+const ticketsUrl = DATA.ticketsUrl?.trim();
+let pretixOrigin: string | null = null;
+let pretixCssHref: string | null = null;
+let pretixJsHref: string | null = null;
+if (ticketsUrl) {
+  try {
+    const parsed = new URL(ticketsUrl);
+    pretixOrigin = parsed.origin;
+    const base = ticketsUrl.endsWith("/") ? ticketsUrl : `${ticketsUrl}/`;
+    pretixCssHref = `${base}widget/v2.css`;
+    pretixJsHref = `${parsed.origin}/widget/v2.en.js`;
+  } catch {
+    // ticketsUrl is not a valid absolute URL — skip widget tags
+  }
+}
 ---
 
 <head>
@@ -26,6 +43,26 @@ const { image = "/favicon.svg", description, title } = Astro.props;
     type="text/css"
     href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
   />
+
+  {
+    pretixOrigin && (
+      <>
+        <link rel="preconnect" href={pretixOrigin} crossorigin />
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href={pretixCssHref}
+          crossorigin
+        />
+        <script
+          type="text/javascript"
+          src={pretixJsHref}
+          async
+          crossorigin
+        />
+      </>
+    )
+  }
 
   <!-- Global Metadata -->
   <meta charset="utf-8" />

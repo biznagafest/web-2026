@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import { DATA } from "../data/data";
 import DarkModeToggleButton from "./DarkModeToggleButton.astro";
+import PretixBuyButton from "./PretixBuyButton.astro";
 
 const featuredSponsors = DATA.sponsors.filter(
   (sponsor) => sponsor.tier === "gold" && sponsor.hasFeaturedPage,
@@ -122,14 +123,9 @@ const featuredSponsors = DATA.sponsors.filter(
         <li
           class="mx-auto cursor-pointer grid place-content-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg w-fit"
         >
-          <a
-            aria-label="Buy Tickets"
-            href={DATA.ticketsUrl}
-            target="_blank"
-            data-umami-event="buy_tickets_click"
+          <PretixBuyButton
             class="text-white p-2 rounded-lg bg-green-600 hover:bg-green-400 dark:bg-blue-600 dark:hover:bg-blue-400 transition-colors"
-            type="button">Comprar entradas</a
-          >
+          />
         </li>
         <li class="grid place-items-center">
           <DarkModeToggleButton />
@@ -139,14 +135,9 @@ const featuredSponsors = DATA.sponsors.filter(
 
     <div class="flex justify-evenly gap-2 z-40">
       <div id="burger-button-ticket-shortcut">
-        <a
-          aria-label="Buy Tickets"
-          href={DATA.ticketsUrl}
-          target="_blank"
-          data-umami-event="buy_tickets_click"
+        <PretixBuyButton
           class="text-sm hidden sm:block xl:hidden text-white p-2 rounded-lg bg-green-600 hover:bg-green-400 dark:bg-blue-600 dark:hover:bg-blue-400 transition-colors"
-          type="button">Comprar entradas</a
-        >
+        />
       </div>
       <button id="menu-button" class="xl:hidden" data-umami-event="menu_toggle_click" aria-label="Abrir menú">
         <i class="ph ph-list text-3xl"></i>
@@ -154,14 +145,9 @@ const featuredSponsors = DATA.sponsors.filter(
     </div>
   </div>
   <div>
-    <a
-      aria-label="Buy Tickets"
-      href={DATA.ticketsUrl}
-      target="_blank"
-      data-umami-event="buy_tickets_click"
+    <PretixBuyButton
       class="text-sm sm:hidden text-white p-2 rounded-lg bg-green-600 hover:bg-green-400 dark:bg-blue-600 dark:hover:bg-blue-400 transition-colors"
-      type="button">Comprar entradas</a
-    >
+    />
   </div>
 </nav>
 <div
