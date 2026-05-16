@@ -4,6 +4,7 @@ import "swiper/css/bundle";
 
 interface Props {
   images: ReadonlyArray<string>;
+  videoUrl?: string;
   class?: string;
   navigation?: boolean;
   pagination?: boolean;
@@ -12,6 +13,7 @@ interface Props {
 
 const {
   images,
+  videoUrl,
   navigation = false,
   pagination = false,
   scrollbar = false,
@@ -20,6 +22,20 @@ const {
 
 <div class:list={["swiper", Astro.props.class]}>
   <div class="swiper-wrapper">
+    {
+      videoUrl && (
+        <div class="swiper-slide">
+          <iframe
+            title="Last Edition Video"
+            class="w-full h-full"
+            src={videoUrl}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+          />
+        </div>
+      )
+    }
     {
       images.map((image) => (
         <div class="swiper-slide">

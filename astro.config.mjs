@@ -9,7 +9,7 @@ export default defineConfig({
   integrations: [tailwind(), pageInsight(), preact()],
   output: "server",
   adapter: node({ mode: "standalone" }),
-  prefetch: { defaultStrategy: "viewport" },
+  prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
   experimental: { clientPrerender: true },
   env: {
     schema: {

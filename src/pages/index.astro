@@ -10,6 +10,7 @@ import TeamMember from "../components/TeamMember.astro";
 import Notice from "../components/Notice.astro";
 import Accordion from "../components/Accordion.astro";
 import TicketSection from "../components/TicketSection.astro";
+import PretixBuyButton from "../components/PretixBuyButton.astro";
 import SponsorDossier from "../components/SponsorDossier.astro";
 import Carousel from "../components/Carousel.astro";
 import RichText from "../components/RichText.astro";
@@ -392,6 +393,11 @@ for (const [index, sponsor] of Object.entries(DATA.sponsors)) {
           <AnimatedOnViewportEnter animation="animate__animated animate__fadeIn">
             <div class="flex flex-col gap-5">
               <TicketSection tickets={DATA.tickets} />
+              <div class="flex justify-center">
+                <PretixBuyButton
+                  class="text-white text-lg px-6 py-3 rounded-lg bg-green-600 hover:bg-green-400 dark:bg-blue-600 dark:hover:bg-blue-400 transition-colors"
+                />
+              </div>
             </div>
           </AnimatedOnViewportEnter>
 
@@ -557,22 +563,11 @@ for (const [index, sponsor] of Object.entries(DATA.sponsors)) {
               navigation={true}
               pagination={true}
               class="w-full aspect-video sm:rounded-md"
-              images={DATA.lastEdition.gallery}
+              videoUrl={DATA.lastEdition?.lastEditionVideoUrl}
+              images={DATA.lastEdition?.gallery ?? []}
             />
           </div>
         </div>
-        {DATA.lastEdition.lastEditionVideoUrl && (
-          <div class="w-full aspect-video">
-            <iframe
-              title="Last Edition Video"
-              class="w-full h-full"
-              src={DATA.lastEdition.lastEditionVideoUrl}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen
-              loading="lazy"
-            />
-          </div>
-        )}
       </section>
     )
   }

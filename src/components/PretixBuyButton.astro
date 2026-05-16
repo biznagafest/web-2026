@@ -1,0 +1,57 @@
+---
+import { DATA } from "../data/data";
+
+interface Props {
+  class?: string;
+  label?: string;
+  umamiEvent?: string;
+}
+
+const PRETIX_EVENT_URL = DATA.ticketsUrl;
+
+const {
+  class: className = "",
+  label = "Comprar entradas",
+  umamiEvent = "buy_tickets_click",
+} = Astro.props;
+---
+
+<a
+  href={PRETIX_EVENT_URL}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={label}
+  class:list={["pretix-buy-button", className]}
+  data-umami-event={umamiEvent}
+>
+  {label}
+</a>
+
+<script>
+  type PretixWidgetApi = {
+    open: (
+      target_url: string,
+      voucher?: string | null,
+      subevent?: string | null,
+      items?: unknown[] | null,
+      widget_data?: Record<string, unknown> | null,
+      skip_ssl_check?: boolean,
+      disable_iframe?: boolean,
+    ) => void;
+  };
+
+  function openPretixModal(event: MouseEvent) {
+    const link = (event.target as Element).closest<HTMLAnchorElement>(
+      "a.pretix-buy-button",
+    );
+    if (!link) return;
+    const widget = (window as unknown as { PretixWidget?: PretixWidgetApi })
+      .PretixWidget;
+    if (!widget?.open) return;
+    event.preventDefault();
+    const skipSslCheck = window.location.protocol !== "https:";
+    widget.open(link.href, null, null, null, null, skipSslCheck);
+  }
+
+  document.addEventListener("click", openPretixModal);
+</script>

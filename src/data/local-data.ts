@@ -1,9 +1,10 @@
 import type { Data } from "./data.type";
 
 export const LOCALDATA: Data = {
-  title: "BiznagaFest 2025",
-  date: new Date("2025-10-25T00:00:00.000Z"),
-  description: `El BiznagaFest es <u>el gran evento IT de la Costa del Sol</u> para las comunidades "Google developers" de España, que se reúnen para ofrecer conferencias y workshops sobre DevOps, Backend, Frontend, Chatbots, IA, Blockchain y soft skills.
+  title: "BiznagaFest 2026",
+  ticketsUrl: "https://tickets.biznagafest.com/biznagafest/2026/",
+  date: new Date(2026, 10, 7),
+  description: `El BiznagaFest es el gran evento IT de la Costa del Sol para las comunidades "Google developers" de España, que se reúnen para ofrecer conferencias y workshops sobre Devops, Backend, Frontend, Chatbots, IA, Blockchain y soft skills.  
 
 En su edición anterior asistieron más de 700 personas a las 12 horas de ponencias y talleres.
 
