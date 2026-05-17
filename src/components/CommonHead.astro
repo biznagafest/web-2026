@@ -60,6 +60,15 @@ if (ticketsUrl) {
           async
           crossorigin
         />
+        <style>
+          {`@media (max-width: 480px) {
+            .pretix-widget-frame-inner,
+            .pretix-widget-lightbox-inner,
+            .pretix-widget-alert-box {
+              height: 100dvh;
+            }
+          }`}
+        </style>
       </>
     )
   }
