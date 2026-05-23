@@ -10,14 +10,30 @@ export interface Props {
   title: string;
   lang: string;
   description?: Nullish<string>;
+  image?: string;
+  noIndex?: boolean;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-const { title, lang, description = "" } = Astro.props;
+const {
+  title,
+  lang,
+  description = "",
+  image,
+  noIndex,
+  jsonLd,
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang={lang} class="dark">
-  <CommonHead title={title} description={description} />
+  <CommonHead
+    title={title}
+    description={description}
+    image={image}
+    noIndex={noIndex}
+    jsonLd={jsonLd}
+  />
   <body class="bg-surface-page text-text-primary antialiased">
     <div class="min-h-screen flex flex-col justify-between">
       <div>

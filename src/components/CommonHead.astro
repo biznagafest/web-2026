@@ -6,11 +6,21 @@ interface Props {
   title: string;
   description: string;
   image?: string;
+  noIndex?: boolean;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-// const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const {
+  image = "/BIZNAGAFEST-2026-OPENGRAPH.webp",
+  description,
+  title,
+  noIndex = false,
+  jsonLd,
+} = Astro.props;
 
-const { image = "/favicon.svg", description, title } = Astro.props;
+const siteName = DATA.title;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const imageURL = new URL(image, Astro.site ?? Astro.url).toString();
 
 const ticketsUrl = DATA.ticketsUrl?.trim();
 let pretixOrigin: string | null = null;
@@ -150,7 +160,7 @@ if (ticketsUrl) {
           type="text/javascript"
           src={pretixJsHref}
           async
-          crossorigin
+          crossorigin="anonymous"
         />
         <style>
           {`@media (max-width: 480px) {
@@ -167,37 +177,79 @@ if (ticketsUrl) {
 
   <!-- Global Metadata -->
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="icon" type="image/svg+xml" href={image} />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="theme-color" content="#000046" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="mask-icon" href="/favicon.svg" color="#000046" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+
   <link
     rel="alternate"
     type="application/rss+xml"
     title="RSS"
     href="/rss.xml"
   />
-  <meta name="generator" content={Astro.generator} />
 
   <!-- Canonical URL -->
-  <!-- <link rel="canonical" href={canonicalURL} /> -->
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Robots -->
+  {
+    noIndex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow, max-image-preview:large" />
+    )
+  }
 
   <!-- Primary Meta Tags -->
   <title>{title}</title>
   <meta name="title" content={title} />
   <meta name="description" content={description} />
+  <meta
+    name="keywords"
+    content="BiznagaFest, BiznagaFest 2026, GDG Málaga, Google Developers, tech festival, conferencia tecnología, Málaga, Costa del Sol, DevFest, IT, desarrollo, software, IA, devops, frontend, backend"
+  />
+  <meta name="author" content="GDG Málaga" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content={Astro.url} />
+  <meta property="og:site_name" content={siteName} />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={new URL(image, Astro.url)} />
+  <meta property="og:image" content={imageURL} />
+  <meta property="og:image:secure_url" content={imageURL} />
+  <meta property="og:image:type" content="image/webp" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="628" />
+  <meta property="og:image:alt" content={`${siteName} — Are you ready?`} />
 
   <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content={Astro.url} />
-  <meta property="twitter:title" content={title} />
-  <meta property="twitter:description" content={description} />
-  <meta property="twitter:image" content={new URL(image, Astro.url)} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={canonicalURL} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={imageURL} />
+  <meta name="twitter:image:alt" content={`${siteName} — Are you ready?`} />
+
+  {
+    jsonLd && (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLd)}
+      />
+    )
+  }
   <style is:global>
     @tailwind base;
     @tailwind components;

@@ -10,12 +10,17 @@ const featuredSponsors = DATA.sponsors.filter(
 
 <nav
   id="top"
-  class="sticky top-0 z-30 w-full bg-surface-page/95 backdrop-blur supports-[backdrop-filter]:bg-surface-page/80 border-b border-border"
+  class="sticky top-0 z-50 w-full border-b border-border isolate"
 >
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10 bg-surface-page/95 backdrop-blur supports-[backdrop-filter]:bg-surface-page/80"
+  >
+  </div>
   <div
     class="mx-auto max-w-[1240px] flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4"
   >
-    <div class="flex items-center justify-between w-full sm:w-auto">
+    <div class="flex items-center justify-between w-full xl:w-auto">
       <a
         aria-label="Go to Home Page"
         href="/"
@@ -43,11 +48,12 @@ const featuredSponsors = DATA.sponsors.filter(
 
     <div
       id="menu"
-      class="w-full xl:w-auto max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:h-full max-xl:w-3/4 max-xl:max-w-sm max-xl:p-6 max-xl:overflow-y-auto max-xl:translate-x-full max-xl:bg-surface-card max-xl:border-l max-xl:border-border transition-transform duration-300"
+      data-state="closed"
+      class="w-full xl:w-auto"
       tabindex="-1"
     >
       <ul
-        class="flex xl:flex-row flex-col xl:items-center gap-2 xl:gap-1 max-xl:mt-16 font-sans text-sm font-medium"
+        class="flex flex-col xl:flex-row xl:items-center gap-2 xl:gap-1 font-sans text-sm font-medium"
       >
         {
           !!DATA.schedule.length && (
@@ -173,48 +179,124 @@ const featuredSponsors = DATA.sponsors.filter(
 <div
   id="drawer-menu-backdrop"
   aria-hidden="true"
-  class="hidden bg-black/70 fixed inset-0 z-30"
+  class="hidden bg-black/70 fixed inset-0 z-40"
 >
 </div>
+
+<style is:global>
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  @media (max-width: 1279.98px) {
+    nav #menu {
+      position: fixed !important;
+      inset: var(--nav-height, 4.5rem) 0 0 auto !important;
+      width: 75% !important;
+      max-width: 24rem !important;
+      padding: 1.5rem !important;
+      overflow-y: auto !important;
+      z-index: 60;
+      background-color: #040a25;
+      border-left: 1px solid #03038a;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-out;
+    }
+
+    nav #menu[data-state="open"] {
+      transform: translateX(0);
+    }
+  }
+
+  html.nav-resizing nav #menu {
+    transition: none !important;
+  }
+</style>
 <script is:inline data-astro-rerun>
   (() => {
-    function isMenuOpen(button) {
-      return !!button.attributes.getNamedItem("expanded");
+    function isMenuOpen(menu) {
+      return menu?.getAttribute("data-state") === "open";
+    }
+
+    const SCROLL_KEYS = new Set([
+      " ",
+      "PageUp",
+      "PageDown",
+      "End",
+      "Home",
+      "ArrowUp",
+      "ArrowDown",
+    ]);
+
+    function isInsideDrawer(target) {
+      return target instanceof Element && target.closest("#menu") !== null;
+    }
+
+    function preventScrollEvent(e) {
+      if (isInsideDrawer(e.target)) return;
+      e.preventDefault();
+    }
+
+    function preventScrollKey(e) {
+      if (!SCROLL_KEYS.has(e.key)) return;
+      if (isInsideDrawer(e.target)) return;
+      e.preventDefault();
+    }
+
+    function lockScroll() {
+      document.addEventListener("wheel", preventScrollEvent, { passive: false });
+      document.addEventListener("touchmove", preventScrollEvent, {
+        passive: false,
+      });
+      document.addEventListener("keydown", preventScrollKey);
+    }
+
+    function unlockScroll() {
+      document.removeEventListener("wheel", preventScrollEvent);
+      document.removeEventListener("touchmove", preventScrollEvent);
+      document.removeEventListener("keydown", preventScrollKey);
+    }
+
+    function updateNavHeight() {
+      const nav = document.querySelector("nav#top");
+      if (!nav) return;
+      document.documentElement.style.setProperty(
+        "--nav-height",
+        nav.offsetHeight + "px",
+      );
     }
 
     function openMenu(button, menu, backdrop) {
       backdrop?.classList.remove("hidden");
 
-      menu?.classList.remove("max-xl:translate-x-full");
+      menu?.setAttribute("data-state", "open");
       menu?.setAttribute("aria-modal", "true");
       menu?.setAttribute("role", "dialog");
 
       button.innerHTML = `<i class="ph ph-x text-2xl"></i>`;
-      button.setAttribute("expanded", "true");
+      button.setAttribute("aria-expanded", "true");
       button.setAttribute("aria-label", "Cerrar menú");
-      if (window.innerWidth <= 1280) {
-        document.body.classList.add("overflow-hidden");
-      }
+
+      lockScroll();
     }
 
     function closeMenu(button, menu, backdrop) {
       backdrop?.classList.add("hidden");
 
-      menu?.classList.add("max-xl:translate-x-full");
+      menu?.setAttribute("data-state", "closed");
       menu?.removeAttribute("aria-modal");
       menu?.removeAttribute("role");
 
-      button.removeAttribute("expanded");
+      button.setAttribute("aria-expanded", "false");
       button.innerHTML = `<i class="ph ph-list text-2xl"></i>`;
       button.setAttribute("aria-label", "Abrir menú");
 
-      if (window.innerWidth <= 1280) {
-        document.body.classList.remove("overflow-hidden");
-      }
+      unlockScroll();
     }
 
     function toggleMenu(button, menu, backdrop) {
-      if (isMenuOpen(button)) {
+      if (isMenuOpen(menu)) {
         closeMenu(button, menu, backdrop);
       } else {
         openMenu(button, menu, backdrop);
@@ -226,6 +308,8 @@ const featuredSponsors = DATA.sponsors.filter(
     const backdrop = document.querySelector("#drawer-menu-backdrop");
     if (!menu || !button || !backdrop) return;
 
+    updateNavHeight();
+
     button.addEventListener("click", () => {
       toggleMenu(button, menu, backdrop);
     });
@@ -236,8 +320,16 @@ const featuredSponsors = DATA.sponsors.filter(
       }),
     );
 
+    let resizeTimer;
     window.addEventListener("resize", () => {
-      if (window.innerWidth >= 1280 && isMenuOpen(button)) {
+      document.documentElement.classList.add("nav-resizing");
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        document.documentElement.classList.remove("nav-resizing");
+      }, 200);
+
+      updateNavHeight();
+      if (window.innerWidth >= 1280 && isMenuOpen(menu)) {
         closeMenu(button, menu, backdrop);
       }
     });
