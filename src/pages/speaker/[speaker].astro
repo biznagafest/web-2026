@@ -6,12 +6,6 @@ import Socials from "../../components/Socials.astro";
 import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
 
-export function getStaticPaths() {
-  return DATA.speakers.map((_, index) => ({
-    params: { speaker: index },
-  }));
-}
-
 const { speaker } = Astro.params;
 
 const speakerData = DATA.speakers[Number(speaker)];
@@ -30,45 +24,53 @@ const events = DATA.events.filter((event) =>
   description={speakerData.description}
   lang="es"
 >
-  <main class="flex flex-col gap-6 min-h-screen wrapper">
-    <aside class="px-6">
+  <main class="flex flex-col gap-12 min-h-screen mx-auto max-w-[1240px] px-6 py-16 md:py-24">
+    <aside>
       <div
-        class="grid grid-cols-1 lg:grid-cols-[2fr_4fr] gap-4 md:gap-6 lg:gap-12 w-full"
+        class="grid grid-cols-1 lg:grid-cols-[2fr_4fr] gap-6 md:gap-10 lg:gap-12 w-full"
       >
-        <section class="w-full flex-grow flex flex-col gap-3 mx-auto">
-          <Image
-            transition:name={`picture-speaker-${speaker}`}
-            class="w-full max-w-[300px] mx-auto rounded-md border-8 border-blue-600 dark:border-blue-600 aspect-square object-cover"
-            src={speakerData.picture}
-            alt={`Picture of ${speakerData.name}`}
-            height={300}
-            width={300}
-          />
-          <Socials
-            socials={speakerData.socials}
-            class="text-4xl text-dark-background dark:text-light-background"
-          />
+        <section class="w-full flex flex-col gap-5 mx-auto">
+          <div class="w-full max-w-[320px] mx-auto flex flex-col gap-5">
+            <Image
+              transition:name={`picture-speaker-${speaker}`}
+              class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
+              src={speakerData.picture}
+              alt={`Picture of ${speakerData.name}`}
+              height={320}
+              width={320}
+            />
+            <Socials
+              socials={speakerData.socials}
+              class="text-3xl text-text-primary hover:text-accent-yellow transition-colors"
+            />
+          </div>
         </section>
         <div class="flex flex-col gap-4">
           <h1
             transition:name={`name-speaker-${speaker}`}
-            class="text-6xl md:text-8xl font-bold"
+            class="font-heading text-5xl md:text-7xl font-bold uppercase text-text-primary leading-tight"
           >
             {speakerData.name}
           </h1>
-          <h2
-            class="text-2xl font-semibold text-orange-800 dark:text-orange-600"
-          >
+          <h2 class="font-display text-sm md:text-base text-accent-yellow uppercase tracking-pixel">
             {speakerData.position}
           </h2>
-          <div class="flex flex-col gap-4 text-xl">
+          <div
+            class="flex flex-col gap-4 font-sans text-base md:text-lg text-text-primary/90 leading-relaxed"
+          >
             <RichText text={speakerData.description} />
           </div>
         </div>
       </div>
     </aside>
-    <section class="flex flex-col items-center py-2 px-6 pb-10 md:py-20 gap-6">
-      {!!events.length && events.map((event) => <EventCard event={event} />)}
-    </section>
+    {
+      !!events.length && (
+        <section class="flex flex-col gap-6">
+          {events.map((event) => (
+            <EventCard event={event} />
+          ))}
+        </section>
+      )
+    }
   </main>
 </Layout>

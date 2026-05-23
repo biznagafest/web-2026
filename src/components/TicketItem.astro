@@ -3,226 +3,160 @@ import { type Ticket } from "../data/data.type";
 
 interface Props {
   ticket: Ticket;
-  align: "left" | "right";
+  featured?: boolean;
 }
 
-const { ticket, align } = Astro.props;
+const { ticket, featured = false } = Astro.props;
+const isSoldOut = !!ticket.isSoldOut;
+const tierLabel = ticket.subtitle ?? "";
 ---
 
-<div
-  class:list={[
-    "ticket-item-wrapper flex flex-col gap-3 items-start w-[300px]",
-    {
-      "self-start": align === "left",
-      "self-end": align === "right",
-    },
-  ]}
->
-  <article
-    class:list={[
-      "cursor-pointer ticket-item-content border-8 rounded-md bg-white w-[300px] flex flex-row justify-between  shadow-md select-none",
-      {
-        "text-green-600 dark:text-blue-600": !ticket.isSoldOut,
-        "fill-green-600 dark:fill-blue-600": !ticket.isSoldOut,
-        "border-green-600 dark:border-blue-600": !ticket.isSoldOut,
-        "text-gray-200": ticket.isSoldOut,
-        "fill-gray-200": ticket.isSoldOut,
-        "border-gray-200": ticket.isSoldOut,
-      },
-    ]}
-  >
-    {
-      align === "left" && (
-        <svg
-          class="h-full ml-auto select-none pointer-events-none"
-          width="77"
-          height="136"
-          viewBox="0 0 77 136"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cy="68" r="55" fill="currentColor" />
-          <circle cx="72" cy="5" r="5" fill="currentColor" />
-          <circle cx="72" cy="19" r="5" fill="currentColor" />
-          <circle cx="72" cy="33" r="5" fill="currentColor" />
-          <circle cx="72" cy="47" r="5" fill="currentColor" />
-          <circle cx="72" cy="117" r="5" fill="currentColor" />
-          <circle cx="72" cy="131" r="5" fill="currentColor" />
-          <circle cx="72" cy="61" r="5" fill="currentColor" />
-          <circle cx="72" cy="75" r="5" fill="currentColor" />
-          <circle cx="72" cy="89" r="5" fill="currentColor" />
-          <circle cx="72" cy="103" r="5" fill="currentColor" />
-        </svg>
-      )
-    }
-    <header class="w-full grid place-content-center">
-      <h3 class="text-center text-2xl font-bold">
-        {ticket.name}
-      </h3>
-      {
-        ticket.notice && (
-          <span class="text-center text-sm text-gray-600">{ticket.notice}</span>
-        )
-      }
-      {
-        !ticket.isSoldOut && (
-          <span class="text-center text-md">{ticket.price} €</span>
-        )
-      }
-      {
-        ticket.isSoldOut && (
-          <span class="text-center text-sm text-red-600">Sold Out</span>
-        )
-      }
-    </header>
-    {
-      align === "right" && (
-        <svg
-          class="h-full ml-auto select-none pointer-events-none"
-          width="77"
-          height="136"
-          viewBox="0 0 77 136"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            cx="55"
-            cy="55"
-            r="55"
-            transform="matrix(-1 0 0 1 132 13)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 0)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 14)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 28)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 42)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 112)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 126)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 56)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 70)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 84)"
-            fill="currentColor"
-          />
-          <circle
-            cx="5"
-            cy="5"
-            r="5"
-            transform="matrix(-1 0 0 1 10 98)"
-            fill="currentColor"
-          />
-        </svg>
-      )
-    }
-  </article>
+{
+  featured ? (
+    <div class="rounded-md p-[2px] bg-gradient-to-r from-accent-yellow to-accent-red shadow-[0_4px_16px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:-translate-y-1">
+      <article
+        class:list={[
+          "flex flex-col rounded-[6px] bg-surface-card overflow-hidden h-full",
+          isSoldOut && "opacity-60",
+        ]}
+      >
+        <header class="flex flex-col gap-2 px-6 py-4 bg-accent-red/[0.07]">
+          {tierLabel && (
+            <span class="font-sans text-[11px] font-semibold uppercase tracking-[0.11em] text-accent-red/90">
+              {tierLabel}
+            </span>
+          )}
+          <h3 class="font-heading text-xl font-bold text-text-primary tracking-wide leading-tight">
+            {ticket.name}
+          </h3>
+        </header>
 
-  <button
-    aria-label="Toggle Perks"
-    data-umami-event="ticket_perks_toggle"
-    class="ticket-item-toggler self-center rounded-full opacity-40 aspect-square w-[30px] transition-all duration-300 ease-in-out animate-bounce"
-  >
-    <i class="ph ph-arrow-down font-extrabold"></i>
-  </button>
+        <div class="flex flex-col gap-[2px] px-6 pt-4 pb-3">
+          <span class="font-sans text-[11px] text-text-secondary/55">
+            Precio
+          </span>
+          {isSoldOut ? (
+            <span class="font-heading text-5xl font-bold text-accent-red leading-none">
+              SOLD OUT
+            </span>
+          ) : (
+            <span class="font-heading text-[56px] font-bold leading-none bg-gradient-to-r from-accent-yellow to-accent-red bg-clip-text text-transparent">
+              {ticket.price}€
+            </span>
+          )}
+        </div>
 
-  <div
-    class="perk-list hidden flex-col gap-2 items-center animate__animated animate__fadeIn"
-  >
-    <ul class="text-left list-['✅'] list-inside flex flex-col gap-3">
-      {
-        ticket.perks.map((perk, index) => (
-          <li>
-            <span class="md:pl-3">{perk}</span>
+        <div class="px-5">
+          <div class="h-px bg-text-primary/10" />
+        </div>
+
+        <ul class="flex flex-col gap-[10px] px-6 pt-4 pb-2">
+          {ticket.perks.map((perk) => (
+            <li class="flex items-center gap-[10px]">
+              <span
+                aria-hidden="true"
+                class="shrink-0 w-[5px] h-[5px] rounded-full bg-text-primary/75"
+              />
+              <span class="font-sans text-[13px] leading-tight text-text-primary/75">
+                {perk}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        {ticket.notice && (
+          <div class="px-6 pt-4 pb-3">
+            <p class="font-sans text-[11px] text-text-secondary leading-snug">
+              {ticket.notice}
+            </p>
+          </div>
+        )}
+
+        <div class="mt-auto px-6 pt-3 pb-5">
+          {!isSoldOut && (
+            <a
+              href={ticket.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-umami-event="ticket_purchase_click"
+              class="pretix-buy-button flex w-full items-center justify-center rounded-md bg-action-primary px-6 py-3 font-sans text-sm font-semibold tracking-[0.01em] text-white transition-colors hover:bg-action-primary-hover"
+            >
+              Comprar entrada
+            </a>
+          )}
+        </div>
+      </article>
+    </div>
+  ) : (
+    <article
+      class:list={[
+        "flex flex-col rounded-md border border-border bg-surface-card overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:-translate-y-1",
+        isSoldOut && "opacity-60",
+      ]}
+    >
+      <header class="flex flex-col gap-2 px-6 py-4 bg-action-secondary/[0.08]">
+        {tierLabel && (
+          <span class="font-sans text-[11px] font-semibold uppercase tracking-[0.11em] text-text-secondary/65">
+            {tierLabel}
+          </span>
+        )}
+        <h3 class="font-heading text-xl font-bold text-text-primary tracking-wide leading-tight">
+          {ticket.name}
+        </h3>
+      </header>
+
+      <div class="flex flex-col gap-[2px] px-6 pt-4 pb-3">
+        <span class="font-sans text-[11px] text-text-secondary/55">Precio</span>
+        {isSoldOut ? (
+          <span class="font-heading text-5xl font-bold text-accent-red leading-none">
+            SOLD OUT
+          </span>
+        ) : (
+          <span class="font-heading text-[56px] font-bold text-text-primary leading-none">
+            {ticket.price}€
+          </span>
+        )}
+      </div>
+
+      <div class="px-5">
+        <div class="h-px bg-text-primary/10" />
+      </div>
+
+      <ul class="flex flex-col gap-[10px] px-6 pt-4 pb-2">
+        {ticket.perks.map((perk) => (
+          <li class="flex items-center gap-[10px]">
+            <span
+              aria-hidden="true"
+              class="shrink-0 w-[5px] h-[5px] rounded-full bg-text-primary/75"
+            />
+            <span class="font-sans text-[13px] leading-tight text-text-primary/75">
+              {perk}
+            </span>
           </li>
-        ))
-      }
-    </ul>
-  </div>
-</div>
-<style>
-  .ticket-item-wrapper.active .perk-list {
-    display: flex;
-  }
+        ))}
+      </ul>
 
-  div:not(.active) button.ticket-item-toggler {
-    @apply bg-gray-200;
-  }
+      {ticket.notice && (
+        <div class="px-6 pt-4 pb-3">
+          <p class="font-sans text-[11px] text-text-secondary leading-snug">
+            {ticket.notice}
+          </p>
+        </div>
+      )}
 
-  div:not(.active) button.ticket-item-toggler i {
-    @apply text-gray-600;
-  }
-
-  div:not(.active) button.ticket-item-toggler:hover {
-    @apply bg-gray-300;
-  }
-
-  div:not(.active) button.ticket-item-toggler:hover i {
-    @apply text-gray-700;
-  }
-
-  div.active button.ticket-item-toggler {
-    @apply rotate-180 bg-green-200;
-  }
-
-  div.active button.ticket-item-toggler i {
-    @apply text-green-600;
-  }
-
-  div.active button.ticket-item-toggler:hover {
-    @apply bg-green-300;
-  }
-
-  div.active button.ticket-item-toggler:hover i {
-    @apply text-green-700;
-  }
-</style>
+      <div class="mt-auto px-6 pt-3 pb-5">
+        {!isSoldOut && (
+          <a
+            href={ticket.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-umami-event="ticket_purchase_click"
+            class="pretix-buy-button flex w-full items-center justify-center rounded-md bg-action-secondary px-6 py-3 font-sans text-sm font-semibold tracking-[0.01em] text-white transition-colors hover:bg-action-secondary-hover"
+          >
+            Comprar entrada
+          </a>
+        )}
+      </div>
+    </article>
+  )
+}

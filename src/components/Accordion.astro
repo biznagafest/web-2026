@@ -10,18 +10,23 @@ const { data } = Astro.props;
 ---
 
 <ul
-  class="accordion flex flex-col gap-4 [&_a]:dark:text-red-600 [&_a]:text-red-400"
+  class="accordion flex flex-col gap-3 w-full [&_a]:text-accent-yellow [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-accent-blue"
 >
   {
     data.map((faq: FAQ) => (
-      <li class:list={["flex", "flex-col", "accordion-item"]}>
-        <header class="accordion-header rounded-lg flex flex-row justify-between align-middle cursor-pointer gap-x-2 p-4 select-none" data-umami-event="faq_item_toggle">
-          <span class="text-xl">{faq.title}</span>
-          <span class="grid grid-cols-1 place-content-center">
-            <i class="ph ph-caret-down transition-transform duration-150" />
+      <li class:list={["accordion-item flex flex-col rounded-md border border-border bg-surface-card overflow-hidden transition-colors hover:border-border-highlight"]}>
+        <header
+          class="accordion-header flex flex-row items-center justify-between gap-3 cursor-pointer px-6 py-4 select-none transition-colors"
+          data-umami-event="faq_item_toggle"
+        >
+          <span class="accordion-title font-heading text-base md:text-lg font-bold text-text-primary tracking-wide transition-colors">
+            {faq.title}
+          </span>
+          <span class="accordion-toggle inline-flex items-center justify-center w-7 h-7 shrink-0 rounded-full border border-border-highlight bg-[rgba(3,3,138,0.5)] text-accent-blue">
+            <i class="accordion-toggle-icon ph ph-plus text-sm leading-none"></i>
           </span>
         </header>
-        <div class="accordion-body px-4 mt-2 animate__animated animate__fadeIn">
+        <div class="accordion-body hidden px-6 pb-5 pt-3 font-sans text-sm md:text-base text-text-primary/85 leading-relaxed">
           <RichText text={faq.body} />
         </div>
       </li>
@@ -29,47 +34,47 @@ const { data } = Astro.props;
   }
 </ul>
 
-<script>
-  function init() {
-    const tuples = document.querySelectorAll(".accordion-item");
+<script is:inline data-astro-rerun>
+  (() => {
+  const items = document.querySelectorAll(".accordion-item");
 
-    tuples.forEach((tuple) => {
-      const header = tuple.querySelector(".accordion-header");
-      const body = tuple.querySelector(".accordion-body");
+  items.forEach((item) => {
+    const header = item.querySelector(".accordion-header");
+    const body = item.querySelector(".accordion-body");
+    if (!header || !body) return;
 
-      header?.addEventListener("click", () => {
-        tuple.classList.toggle("active");
-        body?.classList.toggle("hidden");
+    header.addEventListener("click", () => {
+      const isActive = item.classList.toggle("active");
+      body.classList.toggle("hidden", !isActive);
+      const icon = item.querySelector(".accordion-toggle-icon");
+      if (icon) {
+        icon.classList.toggle("ph-plus", !isActive);
+        icon.classList.toggle("ph-minus", isActive);
+      }
 
-        tuples.forEach((t) => {
-          if (t !== tuple) {
-            t.classList.remove("active");
+      items.forEach((other) => {
+        if (other !== item) {
+          other.classList.remove("active");
+          other.querySelector(".accordion-body")?.classList.add("hidden");
+          const otherIcon = other.querySelector(".accordion-toggle-icon");
+          if (otherIcon) {
+            otherIcon.classList.add("ph-plus");
+            otherIcon.classList.remove("ph-minus");
           }
-        });
+        }
       });
     });
-  }
-
-  document.addEventListener("astro:page-load", init);
+  });
+  })();
 </script>
 <style>
-  li.active > .accordion-header {
-    @apply bg-red-100 dark:bg-red-400;
+  li.active {
+    @apply border-border-highlight;
   }
-
-  li:not(.active) > .accordion-header {
-    @apply bg-red-50 dark:bg-red-800;
+  li.active .accordion-header {
+    background-color: rgba(3, 3, 138, 0.25);
   }
-
-  li.active i {
-    @apply transform rotate-180;
-  }
-
-  li.active > .accordion-body {
-    @apply block;
-  }
-
-  li:not(.active) > .accordion-body {
-    @apply hidden;
+  li.active .accordion-title {
+    @apply text-accent-yellow;
   }
 </style>

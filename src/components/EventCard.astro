@@ -22,19 +22,20 @@ function formatDate(date?: Nullish<string>) {
 ---
 
 <article
-  class="flex flex-col bg-blue-50 border border-blue-500 dark:border-green-500 dark:bg-green-800 dark:bg-opacity-30 rounded-lg p-4 md:p-6 gap-6 w-full"
+  class="flex flex-col rounded-md border border-border bg-surface-card p-5 md:p-6 gap-5 w-full"
 >
-  <header class="flex flex-col gap-6">
+  <header class="flex flex-col gap-4">
     <div
-      class="flex flex-wrap flex-row gap-4 justify-center md:justify-start text-light-background border-b border-blue-500 dark:border-green-500 pb-4 md:pb-6 text-xs md:text-sm"
+      class="flex flex-wrap flex-row gap-2 justify-center md:justify-start border-b border-border pb-4 text-xs"
     >
       <span
-        class="max-w-fit text-center w-full py-1 px-2 md:py-2 md:px-4 bg-red-500 rounded-full"
-        >{event.type === "lecture" ? "Charla" : "Taller"}</span
+        class="rounded-full bg-accent-red px-3 py-1 font-display text-[10px] uppercase tracking-pixel text-white"
       >
+        {event.type === "lecture" ? "Charla" : "Taller"}
+      </span>
       {
         event.date && (
-          <span class="max-w-fit text-center w-full py-1 px-2 md:py-2 md:px-4 bg-yellow-400 rounded-full text-dark-background flex flex-row items-center gap-1">
+          <span class="rounded-full bg-accent-yellow text-text-inverse px-3 py-1 font-display text-[10px] tracking-pixel flex items-center gap-1">
             <i class="ph ph-clock" />
             {formatDate(event.date)}
           </span>
@@ -43,29 +44,35 @@ function formatDate(date?: Nullish<string>) {
 
       {
         event.place && (
-          <span class="max-w-fit text-center w-full py-1 px-2 md:py-2 md:px-4 bg-blue-600 dark:bg-green-400 rounded-full">
+          <span class="rounded-full bg-action-secondary text-white px-3 py-1 font-display text-[10px] tracking-pixel">
             {event.place}
           </span>
         )
       }
       {
         event.durationInMinutes && (
-          <span class="max-w-fit text-center w-full py-1 px-2 md:py-2 md:px-4 bg-blue-600 dark:bg-green-400 rounded-full">
-            {event.durationInMinutes} min.
+          <span class="rounded-full bg-action-secondary text-white px-3 py-1 font-display text-[10px] tracking-pixel">
+            {event.durationInMinutes} min
           </span>
         )
       }
       {
         event.language && (
-          <span class="max-w-fit text-center w-full py-1 px-2 md:py-2 md:px-4 bg-blue-600 dark:bg-green-400 rounded-full">
-            {event.language}.
+          <span class="rounded-full bg-action-secondary text-white px-3 py-1 font-display text-[10px] tracking-pixel">
+            {event.language}
           </span>
         )
       }
     </div>
-    <h3 class="text-2xl font-semibold">{event.name}</h3>
+    <h3
+      class="font-heading text-2xl font-bold uppercase text-text-primary"
+    >
+      {event.name}
+    </h3>
   </header>
-  <div class="flex flex-col gap-4">
+  <div
+    class="flex flex-col gap-3 font-sans text-base text-text-primary/85 leading-relaxed"
+  >
     <RichText text={event.description} />
   </div>
 </article>

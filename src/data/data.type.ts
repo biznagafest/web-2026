@@ -74,10 +74,12 @@ export interface Sponsor {
 
 export interface Ticket {
   name: string;
+  subtitle?: Nullish<string>;
   price: number;
   url: string;
   perks: ReadonlyArray<string>;
   isSoldOut?: Nullish<boolean>;
+  isFeatured?: Nullish<boolean>;
   notice?: Nullish<string>;
 }
 
@@ -139,7 +141,7 @@ export interface LastEdition {
 }
 
 export interface ScheduleItem {
-  kind: "break" | "nobreak";
+  kind: "break" | "nobreak" | "half-divider";
   type?: Nullish<"lecture" | "workshop">;
   start: string;
   end: string;

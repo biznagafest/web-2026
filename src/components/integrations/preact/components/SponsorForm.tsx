@@ -12,7 +12,7 @@ export default function SponsorForm({ className }: { className?: string }) {
     e.preventDefault();
     setStatus("loading");
     const formData = new FormData(e.target as HTMLFormElement);
-    const response = await fetch("/api/sponsor-contact", {
+    await fetch("/api/sponsor-contact", {
       method: "POST",
       body: formData,
     })
@@ -31,12 +31,19 @@ export default function SponsorForm({ className }: { className?: string }) {
       });
   };
 
+  const inputClass =
+    "rounded-sm p-3 bg-surface-card border border-border text-text-primary placeholder:text-text-primary/40 focus:outline-none focus:ring-2 focus:ring-accent-yellow focus:border-accent-yellow";
+  const labelClass =
+    "font-display text-[10px] uppercase tracking-pixel text-text-secondary";
+
   return (
     <form className={className} onSubmit={submitForm}>
-      <div className="flex flex-col gap-1">
-        <label htmlFor="sponsorFormName">Name</label>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="sponsorFormName" className={labelClass}>
+          Name
+        </label>
         <input
-          className="rounded-md p-2 bg-transparent border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={inputClass}
           type="text"
           id="sponsorFormName"
           name="name"
@@ -46,10 +53,12 @@ export default function SponsorForm({ className }: { className?: string }) {
         />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="sponsorFormEmail">Email</label>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="sponsorFormEmail" className={labelClass}>
+          Email
+        </label>
         <input
-          className="rounded-md p-2 bg-transparent border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className={inputClass}
           type="email"
           id="sponsorFormEmail"
           name="email"
@@ -59,22 +68,26 @@ export default function SponsorForm({ className }: { className?: string }) {
         />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="sponsorFormMessage">Message</label>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="sponsorFormMessage" className={labelClass}>
+          Message
+        </label>
         <textarea
-          className="rounded-md p-2 bg-transparent border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none min-h-40"
+          className={`${inputClass} resize-none min-h-40`}
           id="sponsorFormMessage"
           name="message"
           required
           value={state.message}
-          onChange={(e) => updateFormProperty("message", e.currentTarget.value)}
+          onChange={(e) =>
+            updateFormProperty("message", e.currentTarget.value)
+          }
         />
       </div>
       <button
-        className={`self-center md:self-start px-10 py-2 text-xl rounded-md w-[200px] text-white dark:text-black ${
+        className={`self-center md:self-start inline-flex items-center justify-center rounded-sm px-8 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-white transition-colors ${
           status === "loading"
-            ? "bg-green-50 cursor-not-allowed"
-            : "bg-green-700 dark:bg-green-200 hover:bg-green-500 dark:hover:bg-green-300 cursor-pointer"
+            ? "bg-action-primary/50 cursor-not-allowed"
+            : "bg-action-primary hover:bg-action-primary-hover cursor-pointer"
         }`}
         type="submit"
         data-umami-event="sponsor_form_submit"
@@ -82,20 +95,20 @@ export default function SponsorForm({ className }: { className?: string }) {
       >
         {status === "loading" ? (
           <div class="grid place-items-center">
-            <Spinner className="fill-green-600" />
+            <Spinner className="fill-white" />
           </div>
         ) : (
           "Enviar"
         )}
       </button>
       {status === "error" && (
-        <p className="text-red-500 text-sm mt-2">
+        <p className="text-accent-red text-sm mt-2">
           Ha ocurrido un error al enviar el mensaje. Por favor, inténtalo de
           nuevo más tarde.
         </p>
       )}
       {status === "success" && (
-        <p className="text-green-500 text-sm mt-2">
+        <p className="text-accent-yellow text-sm mt-2">
           ¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.
         </p>
       )}

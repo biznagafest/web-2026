@@ -50,13 +50,26 @@ const {
       ))
     }
   </div>
-  {pagination && <div class="swiper-pagination" data-umami-event="carousel_pagination_click" />}
+  {
+    pagination && (
+      <div
+        class="swiper-pagination"
+        data-umami-event="carousel_pagination_click"
+      />
+    )
+  }
 
   {
     navigation && (
       <>
-        <div class="swiper-button-prev" data-umami-event="carousel_prev_click" />
-        <div class="swiper-button-next" data-umami-event="carousel_next_click" />
+        <div
+          class="swiper-button-prev"
+          data-umami-event="carousel_prev_click"
+        />
+        <div
+          class="swiper-button-next"
+          data-umami-event="carousel_next_click"
+        />
       </>
     )
   }

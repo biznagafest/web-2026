@@ -2,7 +2,6 @@ import type { Data } from "./data.type";
 
 export const LOCALDATA: Data = {
   title: "BiznagaFest 2026",
-  ticketsUrl: "https://tickets.biznagafest.com/biznagafest/2026/",
   date: new Date(2026, 10, 7),
   description: `El BiznagaFest es el gran evento IT de la Costa del Sol para las comunidades "Google developers" de España, que se reúnen para ofrecer conferencias y workshops sobre Devops, Backend, Frontend, Chatbots, IA, Blockchain y soft skills.  
 
@@ -2051,8 +2050,10 @@ La creatividad me ha impulsado a llevar varios caminos simultáneamente, combina
   tickets: [
     {
       name: "Summer",
+      subtitle: "Full Experience",
       price: 25,
-      isSoldOut: true,
+      isSoldOut: false,
+      isFeatured: true,
       notice: "¿A qué esperas?",
       perks: [
         "Acceso al área reservado de patrocinadores",
@@ -2066,8 +2067,10 @@ La creatividad me ha impulsado a llevar varios caminos simultáneamente, combina
     },
     {
       name: "Early Bird",
+      subtitle: "Full Experience",
       price: 16,
-      isSoldOut: true,
+      isSoldOut: false,
+      isFeatured: true,
       notice: "Hasta el 31 de mayo",
       perks: [
         "Acceso al área reservado de patrocinadores",
@@ -2081,8 +2084,9 @@ La creatividad me ha impulsado a llevar varios caminos simultáneamente, combina
     },
     {
       name: "Student",
+      subtitle: "Viewer Mode",
       price: 15,
-      isSoldOut: true,
+      isSoldOut: false,
       notice: undefined,
       perks: [
         "Acceso al área reservado de patrocinadores",
@@ -2096,8 +2100,9 @@ La creatividad me ha impulsado a llevar varios caminos simultáneamente, combina
     },
     {
       name: "General",
+      subtitle: "Viewer Mode",
       price: 26,
-      isSoldOut: true,
+      isSoldOut: false,
       notice: undefined,
       perks: [
         "Acceso al área reservado de patrocinadores",
@@ -2111,8 +2116,9 @@ La creatividad me ha impulsado a llevar varios caminos simultáneamente, combina
     },
     {
       name: "Last Dance",
+      subtitle: "Viewer Mode",
       price: 35,
-      isSoldOut: true,
+      isSoldOut: false,
       notice: "¡Apúntate  a la lista de espera!",
       perks: [
         "Acceso al área reservado de patrocinadores",
@@ -2591,6 +2597,18 @@ Exploraremos nuestras diferencias con respecto a otros sectores y también, ¡c�
       topic: undefined,
     },
     {
+      end: "16:00",
+      kind: "half-divider",
+      start: "14:30",
+      title: "Almuerzo",
+      description: undefined,
+      location: undefined,
+      subtitle: "¡Prepárate para la paella!",
+      type: undefined,
+      language: undefined,
+      topic: undefined,
+    },
+    {
       end: "16:55",
       kind: "nobreak",
       start: "16:00",
@@ -2706,6 +2724,18 @@ Una sesión ligera, entretenida y con demos en vivo para que salgas diciendo: �
       type: "lecture",
       language: "Español",
       topic: "Software Architecture",
+    },
+    {
+      end: "16:00",
+      kind: "half-divider",
+      start: "14:30",
+      title: "Almuerzo",
+      description: undefined,
+      location: undefined,
+      subtitle: "¡Prepárate para la paella!",
+      type: undefined,
+      language: undefined,
+      topic: undefined,
     },
     {
       end: "19:30",

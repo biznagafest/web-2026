@@ -1,7 +1,6 @@
 ---
 import Footer from "../components/Footer.astro";
 import Navigation from "../components/Navigation.astro";
-import Notice from "../components/Notice.astro";
 import { DATA } from "../data/data";
 import CommonHead from "../components/CommonHead.astro";
 import ButtonUp from "../components/ButtonUp.astro";
@@ -16,130 +15,60 @@ export interface Props {
 const { title, lang, description = "" } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang={lang}>
+<!doctype html>
+<html lang={lang} class="dark">
   <CommonHead title={title} description={description} />
-  <body
-    class="bg-light-background dark:bg-dark-background text-dark-background dark:text-light-background"
-  >
-    {
-      DATA.welcomeBanner.isEnabled && (
-        <Notice>
-          <div class="bg-blue-100 dark:bg-green-900 dark:bg-opacity-30">
-            <div class="wrapper px-6 flex flex-col gap-10">
-              <h3 class="text-xl sm:text-2xl md:text-4xl font-bold text-center">
-                ✨¡Hola a todos los asombrosos asistentes del BiznagaFest
-                2024!✨
-              </h3>
-
-              <div class="flex flex-col gap-5 text-lg">
-                <p>
-                  ¡La emoción está en el aire y el evento está en pleno apogeo!
-                  Estamos viendo charlas inspiradoras, participando en talleres
-                  innovadores y construyendo conexiones increíbles en este
-                  epicentro de tecnología.
-                </p>
-                <p>
-                  ¿Pero sabes qué es aún más emocionante? La próxima edición del
-                  BiznagaFest. Sí, lo has oído bien. La diversión no termina
-                  aquí. La próxima edición será aún más grandiosa, con
-                  conferencias aún más fascinantes, talleres aún más
-                  interactivos y oportunidades de networking aún más valiosas.
-                </p>
-                <p>
-                  ¿Por qué esperar? Compra tu entrada para el próximo
-                  BiznagaFest ahora mismo. No te pierdas la oportunidad de ser
-                  parte de este viaje increíblemente enriquecedor en el mundo de
-                  la tecnología.
-                </p>
-                <p class="font-semibold">
-                  ¡Compra tus entradas ahora y prepárate para un futuro lleno de
-                  innovación y descubrimientos en el BiznagaFest del próximo
-                  año! ¡Nos vemos allí! 🚀
-                </p>
-              </div>
-
-              <a
-                target="_blank"
-                title="Comprar entradas"
-                class="text-light-background bg-blue-600 hover:bg-blue-400 dark:bg-green-600 dark:hover:bg-green-400 w-fit px-5 py-2 rounded-md transition-colors"
-                href="https://www.eventbrite.es/e/entradas-biznagafest-2025-1052728016837"
-              >
-                Comprar entradas
-              </a>
-            </div>
-          </div>
-        </Notice>
-      )
-    }
-    <div class="overflow-hidden min-h-screen flex flex-col justify-between">
+  <body class="bg-surface-page text-text-primary antialiased">
+    <div class="min-h-screen flex flex-col justify-between">
       <div>
         <Navigation />
         <slot />
       </div>
-      <ButtonUp class="fixed bottom-1 right-1" />
+      <ButtonUp class="fixed bottom-4 right-4 z-30" />
       <Footer />
     </div>
-    <script>
-      function listenToDarkMode() {
-        const html = document.documentElement;
-        if (!!localStorage.getItem("dark")) {
-          html.classList.add("dark");
-        }
-      }
-
-      function listenAnimations() {
+    {DATA.welcomeBanner.isEnabled && <div class="hidden" aria-hidden="true" />}
+    <script is:inline data-astro-rerun>
+      (() => {
         const animations = [...document.querySelectorAll(".animate")];
-        const callback = (
-          entries: IntersectionObserverEntry[],
-          observer: IntersectionObserver,
-        ) => {
-          entries.forEach((entry: IntersectionObserverEntry) => {
-            let animationClasses = (
-              entry.target.getAttribute("data-animation") ?? ""
-            ).split(" ");
 
-            if (entry.isIntersecting) {
-              if (
-                !entry.target.getAttribute("data-animation-repeat") &&
-                entry.target.getAttribute("data-animation-repeated")
+        const observer = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              const animationClasses = (
+                entry.target.getAttribute("data-animation") ?? ""
+              ).split(" ");
+
+              if (entry.isIntersecting) {
+                if (
+                  !entry.target.getAttribute("data-animation-repeat") &&
+                  entry.target.getAttribute("data-animation-repeated")
+                ) {
+                  observer.unobserve(entry.target);
+                  return;
+                }
+                entry.target.setAttribute("data-animation-repeated", "true");
+                animationClasses.forEach((className) => {
+                  entry.target.classList.add(className);
+                });
+                if (entry.target.classList.contains("invisible")) {
+                  entry.target.classList.remove("invisible");
+                }
+              } else if (
+                !entry.isIntersecting &&
+                entry.boundingClientRect.top > 0
               ) {
-                observer.unobserve(entry.target);
-                return;
+                animationClasses.forEach((className) => {
+                  entry.target.classList.remove(className);
+                });
               }
-              entry.target.setAttribute("data-animation-repeated", "true");
-              animationClasses.forEach((className: any) => {
-                entry.target.classList.add(className);
-              });
-              if (entry.target.classList.contains("invisible")) {
-                entry.target.classList.remove("invisible");
-              }
-            } else if (
-              !entry.isIntersecting &&
-              entry.boundingClientRect.top > 0
-            ) {
-              animationClasses.forEach((className: any) => {
-                entry.target.classList.remove(className);
-              });
-            }
-          });
-        };
-
-        const observer = new IntersectionObserver(callback, {
-          rootMargin: "200px 0px",
-        });
+            });
+          },
+          { rootMargin: "200px 0px" },
+        );
 
         animations.forEach((animation) => observer.observe(animation));
-      }
-
-      function init() {
-        listenToDarkMode();
-        listenAnimations();
-      }
-
-      init();
-
-      document.addEventListener("astro:after-swap", init);
+      })();
     </script>
   </body>
 </html>

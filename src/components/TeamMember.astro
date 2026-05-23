@@ -10,28 +10,36 @@ interface Props {
 const { member, index, kind } = Astro.props;
 ---
 
-<article
-  class="w-full max-w-[300px] h-fit flex flex-col align-middle justify-center"
+<a
+  aria-label={`Go to ${member.name}'s profile`}
+  href={`/${kind}/${index}`}
+  data-umami-event="team_member_profile_click"
+  class="flex flex-col rounded-md border border-border bg-surface-card overflow-hidden shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-border-highlight"
 >
-  <a
-    aria-label={`Go to ${member.name}'s profile`}
+  <div
     transition:name={`picture-${kind}-${member.name}`}
-    href={`/${kind}/${index}#top`}
-    data-umami-event="team_member_profile_click"
-    class="w-[200px] h-[200px] block rounded-full shadow-md hover:shadow-lg transition-shadow duration-500 ease-in-out overflow-hidden mx-auto"
+    class="relative aspect-[260/180] w-full overflow-hidden bg-surface-page"
   >
     <Image
-      class="object-cover select-none mx-auto aspect-square w-[200px] h-[200px] hover:scale-110 transition-transform duration-500 ease-in-out"
       src={member.picture}
       alt={`Picture of ${member.name}`}
-      height={200}
-      width={200}
+      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500"
+      style="-webkit-user-drag: none;"
+      height={180}
+      width={260}
     />
-  </a>
-  <h3
-    transition:name={`name-${kind}-${member.name}`}
-    class="w-full text-2xl font-semibold text-center text-dark-background dark:text-light-background p-2"
-  >
-    {member.name}
-</h3>
-</article>
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-transparent via-surface-card/5 to-surface-card pointer-events-none"
+      aria-hidden="true"
+    >
+    </div>
+  </div>
+  <div class="flex flex-col px-3 py-3">
+    <h3
+      transition:name={`name-${kind}-${member.name}`}
+      class="font-heading text-lg font-bold tracking-wide text-text-primary leading-tight truncate"
+    >
+      {member.name}
+    </h3>
+  </div>
+</a>
