@@ -13,7 +13,7 @@ const tierLabel = ticket.subtitle ?? "";
 
 {
   featured ? (
-    <div class="rounded-md p-[2px] bg-gradient-to-r from-accent-yellow to-accent-red shadow-[0_4px_16px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:-translate-y-1">
+    <div class="ticket-featured-border rounded-md p-[2px] shadow-[0_4px_16px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:-translate-y-1">
       <article
         class:list={[
           "flex flex-col rounded-[6px] bg-surface-card overflow-hidden h-full",
@@ -160,3 +160,34 @@ const tierLabel = ticket.subtitle ?? "";
     </article>
   )
 }
+
+<style>
+  .ticket-featured-border {
+    background-image: repeating-linear-gradient(
+      90deg,
+      #eaea00 0%,
+      #de1223 25%,
+      #eaea00 50%,
+      #de1223 75%,
+      #eaea00 100%
+    );
+    background-size: 300% 100%;
+    background-position: 0% 50%;
+    animation: ticket-border-flow 10s linear infinite;
+  }
+
+  @keyframes ticket-border-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 300% 50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticket-featured-border {
+      animation: none;
+    }
+  }
+</style>

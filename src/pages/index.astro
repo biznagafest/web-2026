@@ -72,7 +72,7 @@ const previousEditionStats = [
   { value: "+800", label: "Asistentes" },
   { value: "+12", label: "Speakers" },
   { value: "+12h", label: "Contenido tech" },
-  { value: "+60", label: "Sponsors aliados" },
+  { value: "+20", label: "Sponsors aliados" },
 ];
 
 const heroStats = [
@@ -97,7 +97,12 @@ const jsonLd = {
   endDate: eventEndDate,
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
-  image: [new URL("/BIZNAGAFEST-2026-OPENGRAPH.webp", Astro.site ?? Astro.url).toString()],
+  image: [
+    new URL(
+      "/BIZNAGAFEST-2026-OPENGRAPH.webp",
+      Astro.site ?? Astro.url,
+    ).toString(),
+  ],
   location: {
     "@type": "Place",
     name: DATA.venue?.title,
