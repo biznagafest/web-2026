@@ -613,7 +613,7 @@ const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
           <iframe
             title="Venue map"
             class="w-full h-full min-h-[320px]"
-            src={data.venue.mapUrl}
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(data.venue.address)}&output=embed`}
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
             width="100%"
@@ -665,7 +665,7 @@ const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
             }
           </ul>
           <a
-            href={data.venue.mapUrl}
+            href={data.venue.mapAddress}
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex w-fit items-center gap-2 rounded-sm border border-border-highlight px-5 py-2.5 font-sans text-sm font-semibold uppercase tracking-wide text-text-primary transition-colors hover:bg-surface-card"

@@ -84,7 +84,7 @@ interface Venue {
   title: string;
   description: string;
   address: string;
-  map_url: string;
+  map_address: string;
   city: string;
   how_to_arrive: HowToArrive;
   pictures: MediaFile[];
@@ -302,7 +302,7 @@ function mapCmsResponseToData(response: CmsResponse): Data {
       description: response.venue.description,
       address: response.venue.address,
       city: response.venue.city,
-      mapUrl: response.venue.map_url,
+      mapAddress: response.venue.map_address,
       pictures: (response.venue.pictures ?? []).map((picture) =>
         prependHostnameToUrl(picture.url),
       ),

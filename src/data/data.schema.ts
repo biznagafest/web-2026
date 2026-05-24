@@ -155,7 +155,7 @@ export const VenueSchema = z.object({
   title: z.string(),
   description: z.string().nullish(),
   address: z.string(),
-  mapUrl: z.string(),
+  mapAddress: z.string(),
   pictures: z.array(z.string()),
   city: z.string(),
   howToArrive: z

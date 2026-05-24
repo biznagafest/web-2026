@@ -2033,8 +2033,7 @@ La creatividad me ha impulsado a llevar varios caminos simultáneamente, combina
     description: "",
     address: "Campus de Teatinos, Blvr. Louis Pasteur, 35, 29010 Málaga.",
     city: "Málaga",
-    mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3198.313861364173!2d-4.4811915018006445!3d36.715022691025084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd72f74b9f3606f1%3A0x9fa32cc2e6b0bbf9!2sE.T.S.%20de%20Ingenier%C3%ADa%20Inform%C3%A1tica!5e0!3m2!1ses!2ses!4v1691019443359!5m2!1ses!2ses",
+    mapAddress: "https://maps.app.goo.gl/d6L1LifX8Y6NDQ6cA",
     pictures: [],
     howToArrive: {
       howToArriveByBike:
