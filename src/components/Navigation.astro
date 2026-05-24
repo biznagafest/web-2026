@@ -1,9 +1,10 @@
 ---
 import { Image } from "astro:assets";
-import { DATA } from "../data/data";
 import PretixBuyButton from "./PretixBuyButton.astro";
 
-const featuredSponsors = DATA.sponsors.filter(
+const { data } = Astro.locals;
+
+const featuredSponsors = data.sponsors.filter(
   (sponsor) => sponsor.tier === "gold" && sponsor.hasFeaturedPage,
 );
 ---
@@ -29,7 +30,7 @@ const featuredSponsors = DATA.sponsors.filter(
       >
         <Image
           src="/logo.svg"
-          alt={`Logo of ${DATA.title}`}
+          alt={`Logo of ${data.title}`}
           class="invert h-10 w-auto"
           height="40"
           width="180"
@@ -56,7 +57,7 @@ const featuredSponsors = DATA.sponsors.filter(
         class="flex flex-col xl:flex-row xl:items-center gap-2 xl:gap-1 font-sans text-sm font-medium"
       >
         {
-          !!DATA.schedule.length && (
+          !!data.schedule.length && (
             <li>
               <a
                 aria-label="Go to Schedule"
@@ -70,7 +71,7 @@ const featuredSponsors = DATA.sponsors.filter(
           )
         }
         {
-          !!DATA.speakers.length && (
+          !!data.speakers.length && (
             <li>
               <a
                 aria-label="Go to Speakers"
@@ -84,7 +85,7 @@ const featuredSponsors = DATA.sponsors.filter(
           )
         }
         {
-          !!DATA.tickets.length && (
+          !!data.tickets.length && (
             <li>
               <a
                 aria-label="Go to Tickets"
@@ -98,7 +99,7 @@ const featuredSponsors = DATA.sponsors.filter(
           )
         }
         {
-          !!DATA.sponsors.length && (
+          !!data.sponsors.length && (
             <li>
               <a
                 aria-label="Go to Sponsors"
@@ -112,7 +113,7 @@ const featuredSponsors = DATA.sponsors.filter(
           )
         }
         {
-          !!DATA.raffles.length && (
+          !!data.raffles.length && (
             <li>
               <a
                 aria-label="Go to Raffles Page"
@@ -126,7 +127,7 @@ const featuredSponsors = DATA.sponsors.filter(
           )
         }
         {
-          !!DATA.faq.length && (
+          !!data.faq.length && (
             <li>
               <a
                 aria-label="Go to FAQ"
@@ -140,7 +141,7 @@ const featuredSponsors = DATA.sponsors.filter(
           )
         }
         {
-          !!DATA.sponsorsDossier.enabled && (
+          !!data.sponsorsDossier.enabled && (
             <li class="xl:ml-2">
               <a
                 aria-label="Go to Sponsors Dossier"

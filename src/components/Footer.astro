@@ -1,8 +1,9 @@
 ---
 import { Image } from "astro:assets";
 
-import { DATA } from "../data/data";
 import Socials from "./Socials.astro";
+
+const { data } = Astro.locals;
 ---
 
 <footer class="bg-surface-page border-t border-border">
@@ -25,9 +26,9 @@ import Socials from "./Socials.astro";
         />
       </a>
       <span class="font-display text-[10px] uppercase tracking-pixel text-text-secondary">
-        &copy; {DATA.title}
+        &copy; {data.title}
       </span>
-      <Socials socials={DATA.socials} />
+      <Socials socials={data.socials} />
     </div>
 
     <nav class="flex flex-col items-center md:items-start gap-3">
@@ -40,7 +41,7 @@ import Socials from "./Socials.astro";
         class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start gap-x-6 gap-y-2"
       >
         {
-          DATA.footerLinks.map((link) => (
+          data.footerLinks.map((link) => (
             <li>
               <a
                 aria-label={`Go to ${link.title} Page`}
@@ -57,13 +58,13 @@ import Socials from "./Socials.astro";
     </nav>
 
     {
-      !!DATA.previousEditions.length && (
+      !!data.previousEditions.length && (
         <div class="flex flex-col items-center md:items-start gap-3">
           <span class="font-display text-[10px] uppercase tracking-pixel text-text-secondary">
             Ediciones anteriores
           </span>
           <ul class="flex flex-row flex-wrap gap-x-3 gap-y-2 justify-center md:justify-start">
-            {DATA.previousEditions.map((prevEd) => (
+            {data.previousEditions.map((prevEd) => (
               <li>
                 <a
                   aria-label={`Go to ${prevEd.name} Page`}

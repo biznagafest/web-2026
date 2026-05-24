@@ -3,24 +3,26 @@ import { Image } from "astro:assets";
 import EventCard from "../../components/EventCard.astro";
 import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
+import { slugify } from "../../utils/slug";
 
+const { data } = Astro.locals;
 const { speaker } = Astro.params;
 
-const speakerData = DATA.speakers[Number(speaker)];
+const speakerData = data.speakers.find((s) => slugify(s.name) === speaker);
 
 if (!speakerData) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
 
-const events = DATA.events.filter((event) =>
+const slug = slugify(speakerData.name);
+const events = data.events.filter((event) =>
   event.speakers.includes(speakerData.name),
 );
 ---
 
 <Layout
-  title={`${speakerData.name} | ${DATA.title}`}
+  title={`${speakerData.name} | ${data.title}`}
   description={speakerData.description}
   lang="es"
 >
@@ -32,7 +34,7 @@ const events = DATA.events.filter((event) =>
         <section class="w-full flex flex-col gap-5 mx-auto">
           <div class="w-full max-w-[320px] mx-auto flex flex-col gap-5">
             <Image
-              transition:name={`picture-speaker-${speaker}`}
+              transition:name={`picture-speaker-${slug}`}
               class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
               src={speakerData.picture}
               alt={`Picture of ${speakerData.name}`}
@@ -47,7 +49,7 @@ const events = DATA.events.filter((event) =>
         </section>
         <div class="flex flex-col gap-4">
           <h1
-            transition:name={`name-speaker-${speaker}`}
+            transition:name={`name-speaker-${slug}`}
             class="font-heading text-5xl md:text-7xl font-bold uppercase text-text-primary leading-tight"
           >
             {speakerData.name}

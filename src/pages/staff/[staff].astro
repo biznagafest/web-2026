@@ -2,20 +2,23 @@
 import { Image } from "astro:assets";
 import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
+import { slugify } from "../../utils/slug";
 
+const { data } = Astro.locals;
 const { staff } = Astro.params;
 
-const staffData = DATA.team.staff[Number(staff)];
+const staffData = data.team.staff.find((m) => slugify(m.name) === staff);
 
 if (!staffData) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
+
+const slug = slugify(staffData.name);
 ---
 
 <Layout
-  title={`${staffData.name} | ${DATA.title}`}
+  title={`${staffData.name} | ${data.title}`}
   description={staffData.description}
   lang="es"
 >
@@ -27,7 +30,7 @@ if (!staffData) {
         <section class="w-full flex flex-col gap-5 mx-auto">
           <div class="w-full max-w-[320px] mx-auto flex flex-col gap-5">
             <Image
-              transition:name={`picture-staff-${staffData.name}`}
+              transition:name={`picture-staff-${slug}`}
               class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
               src={staffData.picture}
               alt={`Picture of ${staffData.name}`}
@@ -43,7 +46,7 @@ if (!staffData) {
         </section>
         <div class="flex flex-col gap-4">
           <h1
-            transition:name={`name-staff-${staffData.name}`}
+            transition:name={`name-staff-${slug}`}
             class="font-heading text-5xl md:text-7xl font-bold uppercase text-text-primary leading-tight"
           >
             {staffData.name}

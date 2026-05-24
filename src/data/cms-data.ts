@@ -1,7 +1,6 @@
 import { CMS_URL } from "astro:env/server";
 import type { Nullable } from "../utils/nullable";
 import type { Data, SponsorTier } from "./data.type";
-import axios from "axios";
 
 interface CmsResponse {
   title: string;
@@ -210,8 +209,14 @@ const cmsHostname = CMS_URL;
 const cmsEndpoint = `${cmsHostname}/api/info`;
 
 export async function getDataFromCms(): Promise<Data> {
-  const response = await axios.get<{ data: CmsResponse }>(cmsEndpoint);
-  return mapCmsResponseToData(response.data.data);
+  const response = await fetch(cmsEndpoint);
+  if (!response.ok) {
+    throw new Error(
+      `[cms] ${cmsEndpoint} responded with ${response.status} ${response.statusText}`,
+    );
+  }
+  const payload = (await response.json()) as { data: CmsResponse };
+  return mapCmsResponseToData(payload.data);
 }
 
 function mapCmsResponseToData(response: CmsResponse): Data {

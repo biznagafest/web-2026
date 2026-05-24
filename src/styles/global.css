@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@phosphor-icons/web/regular";
 
 @theme {
   /* Clear default palette so only the brand colors are available. */
@@ -34,6 +35,10 @@
   --color-border: #03038a;
   --color-border-highlight: #599fff;
 
+  /* --font-display, --font-heading, --font-sans are injected at runtime
+     by Astro's Fonts API (<Font cssVariable="..."/>), which provides
+     fallback metric-adjusted families. The fallbacks below are only used
+     when the Font component is not on the page. */
   --font-display: "Press Start 2P", monospace;
   --font-heading: Rajdhani, sans-serif;
   --font-sans: Inter, sans-serif;
@@ -100,4 +105,50 @@
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: #000046;
+  color: #e4e3ff;
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.font-display,
+.font-display * {
+  font-family: var(--font-display);
+}
+
+.wrapper {
+  @apply mx-auto max-w-310 px-6 py-16 md:py-24;
+}
+
+.wrapper-x {
+  @apply mx-auto max-w-310 px-6;
+}
+
+.pixel-shadow {
+  text-shadow:
+    2px 0 0 #03038a,
+    0 2px 0 #03038a,
+    2px 2px 0 #03038a;
 }

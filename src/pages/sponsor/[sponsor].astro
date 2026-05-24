@@ -3,20 +3,20 @@ import { Image } from "astro:assets";
 import JobOfferCard from "../../components/JobOfferCard.astro";
 import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
 
+const { data } = Astro.locals;
 const { sponsor } = Astro.params;
 
-const sponsorData = DATA.sponsors.find((s) => s.name === sponsor);
+const sponsorData = data.sponsors.find((s) => s.name === sponsor);
 
 if (!sponsorData || sponsorData.hasFeaturedPage === false) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
 ---
 
 <Layout
-  title={`${sponsorData.name} | ${DATA.title}`}
+  title={`${sponsorData.name} | ${data.title}`}
   description={sponsorData.description}
   lang="es"
 >

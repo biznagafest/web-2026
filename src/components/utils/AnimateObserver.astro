@@ -1,47 +1,54 @@
 ---
 // Toggles animation classes on elements with `.animate` and a
 // `data-animation` attribute as they enter/leave the viewport.
+// Re-binds on every client-side navigation (ClientRouter) and cleans
+// up the previous observer to avoid leaks.
 ---
 
-<script is:inline data-astro-rerun>
-  (() => {
-    const animations = [...document.querySelectorAll(".animate")];
+<script>
+  let observer: IntersectionObserver | null = null;
 
-    const observer = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          const animationClasses = (
-            entry.target.getAttribute("data-animation") ?? ""
-          ).split(" ");
+  function attach(): void {
+    detach();
+    const targets = document.querySelectorAll<HTMLElement>(".animate");
+    if (!targets.length) return;
+
+    observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          const target = entry.target as HTMLElement;
+          const classes = (target.dataset.animation ?? "")
+            .split(" ")
+            .filter(Boolean);
 
           if (entry.isIntersecting) {
             if (
-              !entry.target.getAttribute("data-animation-repeat") &&
-              entry.target.getAttribute("data-animation-repeated")
+              !target.dataset.animationRepeat &&
+              target.dataset.animationRepeated
             ) {
-              observer.unobserve(entry.target);
-              return;
+              obs.unobserve(target);
+              continue;
             }
-            entry.target.setAttribute("data-animation-repeated", "true");
-            animationClasses.forEach((className) => {
-              entry.target.classList.add(className);
-            });
-            if (entry.target.classList.contains("invisible")) {
-              entry.target.classList.remove("invisible");
-            }
-          } else if (
-            !entry.isIntersecting &&
-            entry.boundingClientRect.top > 0
-          ) {
-            animationClasses.forEach((className) => {
-              entry.target.classList.remove(className);
-            });
+            target.dataset.animationRepeated = "true";
+            for (const cls of classes) target.classList.add(cls);
+            target.classList.remove("invisible");
+          } else if (entry.boundingClientRect.top > 0) {
+            for (const cls of classes) target.classList.remove(cls);
           }
-        });
+        }
       },
       { rootMargin: "200px 0px" },
     );
 
-    animations.forEach((animation) => observer.observe(animation));
-  })();
+    for (const target of targets) observer.observe(target);
+  }
+
+  function detach(): void {
+    observer?.disconnect();
+    observer = null;
+  }
+
+  attach();
+  document.addEventListener("astro:page-load", attach);
+  document.addEventListener("astro:before-swap", detach);
 </script>

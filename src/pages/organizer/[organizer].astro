@@ -2,20 +2,25 @@
 import { Image } from "astro:assets";
 import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
+import { slugify } from "../../utils/slug";
 
+const { data } = Astro.locals;
 const { organizer } = Astro.params;
 
-const organizerData = DATA.team.organizers[Number(organizer)];
+const organizerData = data.team.organizers.find(
+  (o) => slugify(o.name) === organizer,
+);
 
 if (!organizerData) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
+
+const slug = slugify(organizerData.name);
 ---
 
 <Layout
-  title={`${organizerData.name} | ${DATA.title}`}
+  title={`${organizerData.name} | ${data.title}`}
   description={organizerData.description}
   lang="es"
 >
@@ -27,7 +32,7 @@ if (!organizerData) {
         <section class="w-full flex flex-col gap-5 mx-auto">
           <div class="w-full max-w-[320px] mx-auto flex flex-col gap-5">
             <Image
-              transition:name={`picture-organizer-${organizerData.name}`}
+              transition:name={`picture-organizer-${slug}`}
               class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
               src={organizerData.picture}
               alt={`Picture of ${organizerData.name}`}
@@ -43,7 +48,7 @@ if (!organizerData) {
         </section>
         <div class="flex flex-col gap-4">
           <h1
-            transition:name={`name-organizer-${organizerData.name}`}
+            transition:name={`name-organizer-${slug}`}
             class="font-heading text-5xl md:text-7xl font-bold uppercase text-text-primary leading-tight"
           >
             {organizerData.name}

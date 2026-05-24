@@ -1,19 +1,18 @@
 ---
 import AnimatedOnViewportEnter from "../../components/utils/AnimatedOnViewportEnter.astro";
-import ScheduleComponent from "../../components/Schedule.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
 import Schedule from "../../components/Schedule.astro";
 
-const hasSchedule = !!DATA.schedule.length;
+const { data } = Astro.locals;
+const hasSchedule = !!data.schedule.length;
 
 if (!hasSchedule) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
 ---
 
 <Layout
-  title={`Agenda | ${DATA.title}`}
+  title={`Agenda | ${data.title}`}
   description="Agenda completa del BiznagaFest 2026: charlas, workshops, ponentes y horarios de la jornada IT en la Costa del Sol."
   lang="es"
 >
@@ -25,7 +24,7 @@ if (!hasSchedule) {
         >
           <h2 class="text-3xl font-bold text-center md:text-left">Schedule</h2>
         </AnimatedOnViewportEnter>
-        <Schedule data={DATA.schedule} />
+        <Schedule data={data.schedule} />
       </div>
     </section>
   </main>

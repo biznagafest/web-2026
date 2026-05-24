@@ -2,13 +2,13 @@
 import Raffle from "../../components/Raffle.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
 import AnimatedOnViewportEnter from "../../components/utils/AnimatedOnViewportEnter.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
 
-const hasRaffles = !!DATA.raffles.length;
+const { data } = Astro.locals;
+const hasRaffles = !!data.raffles.length;
 
 if (!hasRaffles) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
 ---
 
@@ -27,7 +27,7 @@ if (!hasRaffles) {
 
       <div class="flex flex-col">
         {
-          DATA.raffles.map((raffle, key) => {
+          data.raffles.map((raffle, key) => {
             const isEven = key % 2 === 0;
             return (
               <AnimatedOnViewportEnter animation="animate-fade-in">

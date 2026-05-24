@@ -1,8 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import { DATA } from "../data/data";
-import biznagaWordmark from "../assets/biznagafest-wordmark.svg";
+import BiznagaWordmark from "../assets/biznagafest-wordmark.svg";
 import heroBackground from "../assets/hero-background.webp";
 import Speaker from "../components/Speaker.astro";
 import Sponsor from "../components/Sponsor.astro";
@@ -23,12 +22,14 @@ import SponsorsCta from "../components/SponsorsCta.astro";
 import SponsorForm from "../components/integrations/preact/components/SponsorForm";
 import { buildEventJsonLd } from "../utils/json-ld";
 
+const { data } = Astro.locals;
+
 const heroDateFormatter = new Intl.DateTimeFormat("es-ES", {
   day: "2-digit",
   month: "long",
   year: "numeric",
 });
-const heroDateLabel = heroDateFormatter.format(DATA.date).toUpperCase();
+const heroDateLabel = heroDateFormatter.format(data.date).toUpperCase();
 
 const sponsorTierLabels: Record<SponsorTier, string> = {
   platinum: "GOD TIER",
@@ -66,7 +67,7 @@ const sponsorsByTier: Record<SponsorTier, ISponsor[]> = {
   supporter: [],
 };
 
-for (const sponsor of DATA.sponsors) {
+for (const sponsor of data.sponsors) {
   sponsorsByTier[sponsor.tier].push(sponsor);
 }
 
@@ -84,12 +85,12 @@ const heroStats = [
   { value: "+120", label: "Horas de contenido tech" },
 ];
 
-const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
+const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
 ---
 
 <Layout
-  title={DATA.title}
-  description={DATA.description}
+  title={data.title}
+  description={data.description}
   lang="es"
   jsonLd={jsonLd}
 >
@@ -118,19 +119,17 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
         Costa del Sol · Tech Festival
       </span>
       <h1 class="w-full max-w-[1140px]">
-        <Image
-          src={biznagaWordmark}
-          alt="BiznagaFest 2026"
+        <BiznagaWordmark
+          aria-label="BiznagaFest 2026"
+          role="img"
           class="w-full h-auto"
-          layout="full-width"
-          loading="eager"
         />
       </h1>
       <div
         class="font-display text-base md:text-xl text-text-primary flex flex-col gap-2"
       >
         <p>{heroDateLabel}</p>
-        <p>{DATA.venue.title}</p>
+        <p>{data.venue.title}</p>
       </div>
       <p
         class="font-display text-xs md:text-sm text-accent-yellow animate-pulse"
@@ -142,7 +141,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
           class="inline-flex items-center justify-center rounded-sm bg-action-primary px-6 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-action-primary-hover"
         />
         {
-          !!DATA.schedule.length && (
+          !!data.schedule.length && (
             <a
               href="#schedule"
               class="inline-flex items-center justify-center rounded-sm border border-border-highlight px-6 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-text-primary transition-colors hover:bg-surface-card"
@@ -170,7 +169,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
           <div
             class="flex flex-col gap-4 font-sans text-base text-text-primary/85 leading-relaxed [&_u]:text-accent-yellow [&_u]:underline [&_u]:underline-offset-2"
           >
-            <RichText text={DATA.description} />
+            <RichText text={data.description} />
           </div>
         </div>
       </AnimatedOnViewportEnter>
@@ -188,7 +187,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Speakers -->
   {
-    !!DATA.speakers.length && (
+    !!data.speakers.length && (
       <section id="speakers" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -199,8 +198,8 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
             />
           </AnimatedOnViewportEnter>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {DATA.speakers.map((speaker, index) => (
-              <Speaker speaker={speaker} index={index} />
+            {data.speakers.map((speaker) => (
+              <Speaker speaker={speaker} />
             ))}
           </div>
         </div>
@@ -210,7 +209,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Call for Papers -->
   {
-    DATA.callForPapers.isEnabled && (
+    data.callForPapers.isEnabled && (
       <section
         id="cfp"
         class="relative overflow-hidden border-y border-accent-yellow/40 bg-surface-page"
@@ -255,12 +254,12 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
             <a
               aria-label="Call for Papers Link"
               class="group relative inline-flex items-center gap-3 rounded-sm bg-accent-yellow px-8 py-4 md:px-10 md:py-5 font-display text-sm md:text-base uppercase tracking-pixel text-text-inverse shadow-[0_0_0_3px_var(--color-action-secondary),0_0_24px_rgba(234,234,0,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_0_3px_var(--color-action-secondary),0_10px_36px_rgba(234,234,0,0.55)]"
-              href={DATA.callForPapers.url}
+              href={data.callForPapers.url}
               target="_blank"
               rel="noopener noreferrer"
               data-umami-event="call_for_papers_click"
             >
-              {DATA.callForPapers.title}
+              {data.callForPapers.title}
               <i
                 class="ph ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"
                 aria-hidden="true"
@@ -282,7 +281,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Hosts -->
   {
-    !!DATA.hosts.length && (
+    !!data.hosts.length && (
       <section id="hosts" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -294,8 +293,8 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
             />
           </AnimatedOnViewportEnter>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {DATA.hosts.map((host, index) => (
-              <Host host={host} index={index} />
+            {data.hosts.map((host) => (
+              <Host host={host} />
             ))}
           </div>
         </div>
@@ -305,7 +304,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Schedule / Agenda -->
   {
-    !!DATA.schedule.length && (
+    !!data.schedule.length && (
       <section id="schedule" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -315,7 +314,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
               subtitle="Charlas, talleres y descansos. Toca cada combate para ver detalles."
             />
           </AnimatedOnViewportEnter>
-          <Schedule data={DATA.schedule} />
+          <Schedule data={data.schedule} />
         </div>
       </section>
     )
@@ -323,7 +322,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Tickets -->
   {
-    !!DATA.tickets.length && (
+    !!data.tickets.length && (
       <section id="tickets" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -335,10 +334,10 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
           </AnimatedOnViewportEnter>
           <AnimatedOnViewportEnter animation="animate-fade-in">
             <div class="flex flex-col gap-6">
-              <TicketSection tickets={DATA.tickets} />
+              <TicketSection tickets={data.tickets} />
             </div>
           </AnimatedOnViewportEnter>
-          {!!DATA.companyTicketsNotice.enabled && (
+          {!!data.companyTicketsNotice.enabled && (
             <div class="mt-4 mx-auto max-w-3xl relative overflow-hidden rounded-md border border-border-highlight/40 bg-surface-card shadow-[0_4px_16px_rgba(0,0,0,0.45)]">
               <span
                 aria-hidden="true"
@@ -353,17 +352,17 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
                     Co-op Mode
                   </span>
                   <h3 class="font-heading text-xl md:text-2xl font-bold uppercase text-text-primary tracking-wide leading-tight">
-                    {DATA.companyTicketsNotice.title}
+                    {data.companyTicketsNotice.title}
                   </h3>
                   <div class="font-sans text-sm md:text-base text-text-primary/85 leading-relaxed [&_a]:text-accent-yellow [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-accent-blue [&_a]:transition-colors">
-                    <RichText text={DATA.companyTicketsNotice.description} />
+                    <RichText text={data.companyTicketsNotice.description} />
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {DATA.tshirt && (
+          {data.tshirt && (
             <div class="mt-4 relative overflow-hidden rounded-md border border-border-highlight/40 bg-surface-card shadow-[0_4px_16px_rgba(0,0,0,0.45)]">
               <span
                 aria-hidden="true"
@@ -374,35 +373,35 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
                   <span class="font-display text-[10px] uppercase tracking-pixel text-accent-yellow">
                     Bonus Drop
                   </span>
-                  {DATA.tshirt.title && (
+                  {data.tshirt.title && (
                     <h4 class="font-heading text-2xl md:text-3xl font-bold uppercase text-text-primary leading-tight tracking-wide">
-                      {DATA.tshirt.title}
+                      {data.tshirt.title}
                     </h4>
                   )}
                   <span
                     aria-hidden="true"
                     class="hidden lg:block h-[3px] w-14 rounded-sm bg-gradient-to-r from-accent-yellow to-accent-red"
                   />
-                  {DATA.tshirt.subtitle && (
+                  {data.tshirt.subtitle && (
                     <p class="font-sans text-sm md:text-base text-text-primary/80 leading-relaxed">
-                      {DATA.tshirt.subtitle}
+                      {data.tshirt.subtitle}
                     </p>
                   )}
                 </div>
                 <div class="mx-auto w-full max-w-[280px]">
                   <div class="rounded-md p-[2px] bg-gradient-to-br from-accent-yellow via-accent-red to-action-secondary">
                     <div class="rounded-[6px] overflow-hidden bg-surface-page">
-                      {DATA.tshirt.type === "image" ? (
+                      {data.tshirt.type === "image" ? (
                         <img
                           class="w-full aspect-square object-cover"
-                          src={DATA.tshirt.url}
-                          alt={DATA.tshirt.title ?? "T-shirt"}
+                          src={data.tshirt.url}
+                          alt={data.tshirt.title ?? "T-shirt"}
                           loading="lazy"
                         />
                       ) : (
                         <video
                           class="w-full aspect-square object-cover"
-                          src={DATA.tshirt.url}
+                          src={data.tshirt.url}
                           autoplay
                           loop
                           muted
@@ -422,7 +421,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Sponsors -->
   {
-    !!DATA.sponsors.length && (
+    !!data.sponsors.length && (
       <section id="sponsors" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -562,7 +561,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Sponsors CTA -->
   {
-    DATA.sponsorsDossier.enabled && (
+    data.sponsorsDossier.enabled && (
       <section id="callForSponsors">
         <SponsorsCta
           title="Haz visible tu marca en BiznagaFest"
@@ -573,7 +572,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
         <div class="mx-auto max-w-[1240px] px-6 py-16 md:py-20 flex flex-col gap-8 bg-surface-page">
           <div class="flex flex-col gap-6">
             <SponsorDossier
-              dossier={DATA.sponsorsDossier}
+              dossier={data.sponsorsDossier}
               class="mx-auto w-fit flex flex-col gap-2 items-center"
             />
             <p class="text-center font-sans text-sm text-text-primary/80">
@@ -614,7 +613,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
           <iframe
             title="Venue map"
             class="w-full h-full min-h-[320px]"
-            src={DATA.venue.mapUrl}
+            src={data.venue.mapUrl}
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
             width="100%"
@@ -626,47 +625,47 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
           <h3
             class="font-heading text-2xl md:text-3xl font-bold uppercase text-text-primary"
           >
-            {DATA.venue.title}
+            {data.venue.title}
           </h3>
           <p class="font-sans text-sm md:text-base text-text-primary/85">
-            {DATA.venue.address}
+            {data.venue.address}
           </p>
           <ul class="flex flex-col gap-4">
             {
-              DATA.venue.howToArrive?.howToArriveByMetro && (
+              data.venue.howToArrive?.howToArriveByMetro && (
                 <li class="flex items-start gap-3 font-sans text-sm text-text-primary/90">
                   <i class="ph ph-train text-xl text-accent-blue mt-0.5" />
                   <div class="flex-1 [&>ul]:list-disc [&>ul]:list-inside">
                     <RichText
-                      text={DATA.venue.howToArrive.howToArriveByMetro}
+                      text={data.venue.howToArrive.howToArriveByMetro}
                     />
                   </div>
                 </li>
               )
             }
             {
-              DATA.venue.howToArrive?.howToArriveByBus && (
+              data.venue.howToArrive?.howToArriveByBus && (
                 <li class="flex items-start gap-3 font-sans text-sm text-text-primary/90">
                   <i class="ph ph-bus text-xl text-accent-blue mt-0.5" />
                   <div class="flex-1 [&>ul]:list-disc [&>ul]:list-inside">
-                    <RichText text={DATA.venue.howToArrive.howToArriveByBus} />
+                    <RichText text={data.venue.howToArrive.howToArriveByBus} />
                   </div>
                 </li>
               )
             }
             {
-              DATA.venue.howToArrive?.howToArriveByBike && (
+              data.venue.howToArrive?.howToArriveByBike && (
                 <li class="flex items-start gap-3 font-sans text-sm text-text-primary/90">
                   <i class="ph ph-bicycle text-xl text-accent-blue mt-0.5" />
                   <div class="flex-1 [&>ul]:list-disc [&>ul]:list-inside">
-                    <RichText text={DATA.venue.howToArrive.howToArriveByBike} />
+                    <RichText text={data.venue.howToArrive.howToArriveByBike} />
                   </div>
                 </li>
               )
             }
           </ul>
           <a
-            href={DATA.venue.mapUrl}
+            href={data.venue.mapUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex w-fit items-center gap-2 rounded-sm border border-border-highlight px-5 py-2.5 font-sans text-sm font-semibold uppercase tracking-wide text-text-primary transition-colors hover:bg-surface-card"
@@ -682,8 +681,8 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Previous Edition -->
   {
-    (DATA.lastEdition?.lastEditionVideoUrl ||
-      !!DATA.lastEdition?.gallery?.length) && (
+    (data.lastEdition?.lastEditionVideoUrl ||
+      !!data.lastEdition?.gallery?.length) && (
       <section id="last" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -698,13 +697,13 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
               <StatCard value={stat.value} label={stat.label} />
             ))}
           </div>
-          {!!DATA.lastEdition?.gallery?.length && (
+          {!!data.lastEdition?.gallery?.length && (
             <Carousel
               navigation={true}
               pagination={true}
               class="w-full aspect-video rounded-md overflow-hidden border border-border"
-              videoUrl={DATA.lastEdition?.lastEditionVideoUrl}
-              images={DATA.lastEdition?.gallery ?? []}
+              videoUrl={data.lastEdition?.lastEditionVideoUrl}
+              images={data.lastEdition?.gallery ?? []}
             />
           )}
         </div>
@@ -714,7 +713,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Hall of Fame -->
   {
-    !!DATA.hallOfFame.length && (
+    !!data.hallOfFame.length && (
       <section
         id="hallOfFame"
         class="relative bg-surface-card border-t border-border/40 overflow-hidden"
@@ -734,7 +733,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
           </AnimatedOnViewportEnter>
 
           <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
-            {DATA.hallOfFame.map((personality) => (
+            {data.hallOfFame.map((personality) => (
               <li class="group relative overflow-hidden rounded-md border border-border bg-surface-page aspect-square transition-all duration-300 hover:border-accent-yellow hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(234,234,0,0.22)]">
                 <Image
                   src={personality.picture}
@@ -768,7 +767,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- FAQ -->
   {
-    !!DATA.faq.length && (
+    !!data.faq.length && (
       <section id="faq" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -778,7 +777,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
               align="center"
             />
           </AnimatedOnViewportEnter>
-          <Accordion data={DATA.faq} />
+          <Accordion data={data.faq} />
         </div>
       </section>
     )
@@ -786,7 +785,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Team / Organizers -->
   {
-    !!DATA.team.organizers.length && (
+    !!data.team.organizers.length && (
       <section id="team" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -797,8 +796,8 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
             />
           </AnimatedOnViewportEnter>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {DATA.team.organizers.map((member, index) => (
-              <TeamMember kind="organizer" member={member} index={index} />
+            {data.team.organizers.map((member) => (
+              <TeamMember kind="organizer" member={member} />
             ))}
           </div>
         </div>
@@ -808,7 +807,7 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 
   <!-- Staff -->
   {
-    !!DATA.team.staff.length && (
+    !!data.team.staff.length && (
       <section id="staff" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
           <AnimatedOnViewportEnter animation="animate-fade-in-left">
@@ -819,8 +818,8 @@ const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
             />
           </AnimatedOnViewportEnter>
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-            {DATA.team.staff.map((member, index) => (
-              <TeamMember kind="staff" member={member} index={index} />
+            {data.team.staff.map((member) => (
+              <TeamMember kind="staff" member={member} />
             ))}
           </div>
         </div>

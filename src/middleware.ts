@@ -1,10 +1,11 @@
 import { defineMiddleware } from "astro:middleware";
-import { ensureFreshData } from "./data/data";
+import { ensureFreshData, getData } from "./data/data";
 
 const HTML_CACHE_SECONDS = 60;
 
-export const onRequest = defineMiddleware(async (_context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
   await ensureFreshData();
+  context.locals.data = getData();
   const response = await next();
   const contentType = response.headers.get("content-type") ?? "";
   if (contentType.includes("text/html")) {

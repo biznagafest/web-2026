@@ -2,20 +2,23 @@
 import { Image } from "astro:assets";
 import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
-import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
+import { slugify } from "../../utils/slug";
 
+const { data } = Astro.locals;
 const { host } = Astro.params;
 
-const hostData = DATA.hosts[Number(host)];
+const hostData = data.hosts.find((h) => slugify(h.name) === host);
 
 if (!hostData) {
-  return Astro.redirect("/");
+  return Astro.rewrite("/404");
 }
+
+const slug = slugify(hostData.name);
 ---
 
 <Layout
-  title={`${hostData.name} | ${DATA.title}`}
+  title={`${hostData.name} | ${data.title}`}
   description={hostData.description}
   lang="es"
 >
@@ -26,7 +29,7 @@ if (!hostData) {
       >
         <section class="w-full flex flex-col gap-5 mx-auto">
           <Image
-            transition:name={`picture-host-${host}`}
+            transition:name={`picture-host-${slug}`}
             class="w-full max-w-[320px] mx-auto rounded-md border-2 border-border-highlight aspect-square object-cover"
             src={hostData.picture}
             alt={`Picture of ${hostData.name}`}
@@ -40,7 +43,7 @@ if (!hostData) {
         </section>
         <div class="flex flex-col gap-4">
           <h1
-            transition:name={`name-host-${host}`}
+            transition:name={`name-host-${slug}`}
             class="font-heading text-5xl md:text-7xl font-bold uppercase text-text-primary leading-tight"
           >
             {hostData.name}

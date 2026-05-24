@@ -2,11 +2,12 @@
 import "../styles/global.css";
 import Footer from "../components/Footer.astro";
 import Navigation from "../components/Navigation.astro";
-import { DATA } from "../data/data";
 import CommonHead from "../components/CommonHead.astro";
 import ButtonUp from "../components/ButtonUp.astro";
 import AnimateObserver from "../components/utils/AnimateObserver.astro";
 import type { Nullish } from "../utils/nullish";
+
+const { data } = Astro.locals;
 
 export interface Props {
   title: string;
@@ -45,7 +46,7 @@ const {
       <ButtonUp class="fixed bottom-4 right-4 z-30" />
       <Footer />
     </div>
-    {DATA.welcomeBanner.isEnabled && <div class="hidden" aria-hidden="true" />}
+    {data.welcomeBanner.isEnabled && <div class="hidden" aria-hidden="true" />}
     <AnimateObserver />
   </body>
 </html>

@@ -37,8 +37,7 @@ const cardHeight = tierHeights[sponsor.tier];
     <Image
       src={sponsor.picture}
       alt={`Logo of ${sponsor.name}`}
-      width={400}
-      height={120}
+      inferSize
       class:list={[
         "w-auto max-w-full object-contain opacity-90 transition-opacity duration-300 group-hover:opacity-100",
         cardHeight,

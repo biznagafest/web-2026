@@ -1,23 +1,25 @@
 ---
 import { Image } from "astro:assets";
 import type { Speaker } from "../data/data.type";
+import { slugify } from "../utils/slug";
 
 interface Props {
   speaker: Speaker;
-  index: number;
 }
 
-const { speaker, index } = Astro.props;
+const { speaker } = Astro.props;
+const slug = slugify(speaker.name);
 ---
 
 <a
   aria-label={`Go to ${speaker.name}'s profile`}
-  href={`/speaker/${index}`}
+  href={`/speaker/${slug}`}
+  data-astro-history="push"
   data-umami-event="speaker_profile_click"
   class="flex flex-col rounded-md bg-surface-card overflow-hidden shadow-card transition-all duration-300 hover:-translate-y-1"
 >
   <div
-    transition:name={`picture-speaker-${index}`}
+    transition:name={`picture-speaker-${slug}`}
     class="relative aspect-[292/240] w-full overflow-hidden bg-surface-page"
   >
     <Image
@@ -36,7 +38,7 @@ const { speaker, index } = Astro.props;
   </div>
   <div class="flex flex-col gap-1 px-4 py-3">
     <h3
-      transition:name={`name-speaker-${index}`}
+      transition:name={`name-speaker-${slug}`}
       class="font-heading text-xl font-bold tracking-wide text-text-primary leading-tight truncate"
     >
       {speaker.name}

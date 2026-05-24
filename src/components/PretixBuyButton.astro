@@ -1,5 +1,5 @@
 ---
-import { DATA } from "../data/data";
+const { data } = Astro.locals;
 
 interface Props {
   class?: string;
@@ -7,7 +7,7 @@ interface Props {
   umamiEvent?: string;
 }
 
-const PRETIX_EVENT_URL = DATA.ticketsUrl;
+const PRETIX_EVENT_URL = data.ticketsUrl;
 
 const {
   class: className = "",
