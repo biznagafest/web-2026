@@ -1,4 +1,4 @@
-import { CMS_URL } from "astro:env/client";
+import { CMS_URL } from "astro:env/server";
 import type { Nullable } from "../utils/nullable";
 import type { Data, SponsorTier } from "./data.type";
 import axios from "axios";
@@ -49,7 +49,7 @@ interface Raffleitem {
 }
 
 interface ScheduleItem {
-  kind: "break" | "nobreak";
+  kind: "break" | "nobreak" | "half-divider";
   type: Nullable<"lecture" | "workshop">;
   time_start: string;
   time_end: string;
@@ -193,8 +193,10 @@ interface JobOffer {
 
 interface Ticket {
   name: string;
+  subtitle?: Nullable<string>;
   price: number;
   is_sold_out: boolean;
+  is_featured?: Nullable<boolean>;
   notice?: string;
   perks: Perk[];
 }
@@ -307,8 +309,10 @@ function mapCmsResponseToData(response: CmsResponse): Data {
     },
     tickets: (response.tickets ?? []).map((ticket) => ({
       name: ticket.name,
+      subtitle: ticket.subtitle || undefined,
       price: ticket.price,
       isSoldOut: ticket.is_sold_out,
+      isFeatured: ticket.is_featured || undefined,
       notice: ticket.notice || undefined,
       perks: ticket.perks.map((perk) => perk.description),
       url: response.tickets_url ?? "",

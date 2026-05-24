@@ -5,12 +5,6 @@ import Socials from "../../components/Socials.astro";
 import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
 
-export function getStaticPaths() {
-  return DATA.team.organizers.map((_, index) => ({
-    params: { organizer: index },
-  }));
-}
-
 const { organizer } = Astro.params;
 
 const organizerData = DATA.team.organizers[Number(organizer)];
@@ -25,39 +19,41 @@ if (!organizerData) {
   description={organizerData.description}
   lang="es"
 >
-  <main class="flex flex-col gap-6 min-h-screen wrapper">
-    <aside class="px-6">
+  <main class="flex flex-col gap-12 min-h-screen mx-auto max-w-[1240px] px-6 py-16 md:py-24">
+    <aside>
       <div
-        class="grid grid-cols-1 lg:grid-cols-[2fr_4fr] gap-4 md:gap-6 lg:gap-12 w-full"
+        class="grid grid-cols-1 lg:grid-cols-[2fr_4fr] gap-6 md:gap-10 lg:gap-12 w-full"
       >
-        <section class="w-full flex-grow flex flex-col gap-3 mx-auto">
-          <Image
-            transition:name={`picture-organizer-${organizerData.name}`}
-            class="w-full max-w-[300px] mx-auto rounded-md border-8 border-blue-600 dark:border-blue-600 aspect-square object-cover"
-            src={organizerData.picture}
-            alt={`Picture of ${organizerData.name}`}
-            loading="eager"
-            height={300}
-            width={300}
-          />
-          <Socials
-            socials={organizerData.socials}
-            class="text-4xl text-dark-background dark:text-light-background"
-          />
+        <section class="w-full flex flex-col gap-5 mx-auto">
+          <div class="w-full max-w-[320px] mx-auto flex flex-col gap-5">
+            <Image
+              transition:name={`picture-organizer-${organizerData.name}`}
+              class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
+              src={organizerData.picture}
+              alt={`Picture of ${organizerData.name}`}
+              loading="eager"
+              height={320}
+              width={320}
+            />
+            <Socials
+              socials={organizerData.socials}
+              class="text-3xl text-text-primary hover:text-accent-yellow transition-colors"
+            />
+          </div>
         </section>
         <div class="flex flex-col gap-4">
           <h1
             transition:name={`name-organizer-${organizerData.name}`}
-            class="text-6xl md:text-8xl font-bold"
+            class="font-heading text-5xl md:text-7xl font-bold uppercase text-text-primary leading-tight"
           >
             {organizerData.name}
           </h1>
-          <h2
-            class="text-2xl font-semibold text-orange-800 dark:text-orange-600"
-          >
+          <h2 class="font-display text-sm md:text-base text-accent-yellow uppercase tracking-pixel">
             {organizerData.position}
           </h2>
-          <div class="flex flex-col gap-4 text-xl">
+          <div
+            class="flex flex-col gap-4 font-sans text-base md:text-lg text-text-primary/90 leading-relaxed"
+          >
             <RichText text={organizerData.description} />
           </div>
         </div>

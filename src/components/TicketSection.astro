@@ -8,29 +8,10 @@ interface Props {
 const { tickets } = Astro.props;
 ---
 
-<div class="flex flex-col gap-10">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto w-full">
   {
-    tickets.map((ticket, index) => (
-      <TicketItem ticket={ticket} align={index % 2 === 0 ? "left" : "right"} />
+    tickets.map((ticket) => (
+      <TicketItem ticket={ticket} featured={!!ticket.isFeatured} />
     ))
   }
 </div>
-<script>
-  function init() {
-    const wrappers = document.querySelectorAll(".ticket-item-wrapper");
-
-    wrappers.forEach((wrapper) => {
-      const toggler = wrapper.querySelector(".ticket-item-toggler");
-      const content = wrapper.querySelector(".ticket-item-content");
-      toggler?.addEventListener("click", () => {
-        wrapper.classList.toggle("active");
-      });
-
-      content?.addEventListener("click", () => {
-        wrapper.classList.toggle("active");
-      });
-    });
-  }
-
-  document.addEventListener("astro:page-load", init);
-</script>

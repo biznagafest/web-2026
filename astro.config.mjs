@@ -1,28 +1,34 @@
 import { defineConfig, envField } from "astro/config";
-import tailwind from "@astrojs/tailwind";
 import node from "@astrojs/node";
-import pageInsight from "astro-page-insight";
 import preact from "@astrojs/preact";
+import sitemap from "@astrojs/sitemap";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), pageInsight(), preact()],
+  site: "https://biznagafest.com",
+  integrations: [preact(), sitemap()],
   output: "server",
   adapter: node({ mode: "standalone" }),
   prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
-  experimental: { clientPrerender: true },
+  vite: {
+    plugins: [tailwindcss()],
+  },
+  image: {
+    layout: "constrained",
+  },
   env: {
     schema: {
       USE_CMS: envField.boolean({
         default: false,
         optional: true,
         access: "public",
-        context: "client",
+        context: "server",
       }),
       CMS_URL: envField.string({
         optional: true,
         access: "public",
-        context: "client",
+        context: "server",
         url: true,
       }),
       RESEND_API_KEY: envField.string({

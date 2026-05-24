@@ -12,12 +12,16 @@ if (!hasSchedule) {
 }
 ---
 
-<Layout title="Horario" description="Horario del BiznagaFest 2023" lang="es">
+<Layout
+  title={`Agenda | ${DATA.title}`}
+  description="Agenda completa del BiznagaFest 2026: charlas, workshops, ponentes y horarios de la jornada IT en la Costa del Sol."
+  lang="es"
+>
   <main class="p-6">
     <section id="schedules">
       <div class="wrapper-x gap-16 flex flex-col">
         <AnimatedOnViewportEnter
-          animation="animate__animated animate__fadeInLeft"
+          animation="animate-fade-in-left"
         >
           <h2 class="text-3xl font-bold text-center md:text-left">Schedule</h2>
         </AnimatedOnViewportEnter>

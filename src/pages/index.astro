@@ -2,12 +2,13 @@
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import { DATA } from "../data/data";
+import biznagaWordmark from "../assets/biznagafest-wordmark.svg";
+import heroBackground from "../assets/hero-background.webp";
 import Speaker from "../components/Speaker.astro";
 import Sponsor from "../components/Sponsor.astro";
 import AnimatedOnViewportEnter from "../components/utils/AnimatedOnViewportEnter.astro";
 import type { Sponsor as ISponsor, SponsorTier } from "../data/data.type";
 import TeamMember from "../components/TeamMember.astro";
-import Notice from "../components/Notice.astro";
 import Accordion from "../components/Accordion.astro";
 import TicketSection from "../components/TicketSection.astro";
 import PretixBuyButton from "../components/PretixBuyButton.astro";
@@ -16,131 +17,283 @@ import Carousel from "../components/Carousel.astro";
 import RichText from "../components/RichText.astro";
 import Schedule from "../components/Schedule.astro";
 import Host from "../components/Host.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import StatCard from "../components/StatCard.astro";
+import SponsorsCta from "../components/SponsorsCta.astro";
 import SponsorForm from "../components/integrations/preact/components/SponsorForm";
+import { buildEventJsonLd } from "../utils/json-ld";
 
-function formatDate(date: Date) {
-  const formatter = new Intl.DateTimeFormat("es-ES", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  const formattedDate = formatter.format(date);
+const heroDateFormatter = new Intl.DateTimeFormat("es-ES", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+});
+const heroDateLabel = heroDateFormatter.format(DATA.date).toUpperCase();
 
-  return formattedDate;
-}
+const sponsorTierLabels: Record<SponsorTier, string> = {
+  platinum: "GOD TIER",
+  gold: "LEGENDARY",
+  silver: "EPIC",
+  bronze: "RARE",
+  communitySponsor: "COMMON",
+  media: "MEDIA",
+  community: "Partners",
+  food: "Food Partners",
+  supporter: "Supporters",
+};
 
-const sponsors: Record<SponsorTier, (ISponsor & { index: number })[]> = {
+const sponsorTierOrder: SponsorTier[] = [
+  "platinum",
+  "gold",
+  "silver",
+  "bronze",
+  "communitySponsor",
+  "media",
+  "supporter",
+  "community",
+  "food",
+];
+
+const sponsorsByTier: Record<SponsorTier, ISponsor[]> = {
   platinum: [],
   gold: [],
   silver: [],
   bronze: [],
   communitySponsor: [],
+  media: [],
   community: [],
   food: [],
-  media: [],
   supporter: [],
 };
 
-for (const [index, sponsor] of Object.entries(DATA.sponsors)) {
-  const sponsorsOfTier = sponsors[sponsor.tier] ?? [];
-  sponsorsOfTier.push({
-    ...sponsor,
-    index: Number(index),
-  });
+for (const sponsor of DATA.sponsors) {
+  sponsorsByTier[sponsor.tier].push(sponsor);
 }
+
+const previousEditionStats = [
+  { value: "+800", label: "Asistentes" },
+  { value: "+12", label: "Speakers" },
+  { value: "+12h", label: "Contenido tech" },
+  { value: "+20", label: "Sponsors aliados" },
+];
+
+const heroStats = [
+  { value: "+5.000", label: "Asistentes totales" },
+  { value: "+8", label: "Ediciones" },
+  { value: "+200", label: "Speakers" },
+  { value: "+120", label: "Horas de contenido tech" },
+];
+
+const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 ---
 
-<Layout title={DATA.title} description={DATA.description} lang="es">
-  <header class="h-[400px] bg-green-50 dark:bg-blue-900 dark:bg-opacity-30">
-    <section
-      id="banner"
-      class="w-full flex flex-col gap-3 align-bottom justify-end overflow-y-clip h-full p-10 md:p-20 max-w-[2000px] mx-auto"
-    >
-      <h1 class="text-5xl">{DATA.title}</h1>
-      <AnimatedOnViewportEnter
-        animation="animate__animated animate__fadeInLeft"
+<Layout
+  title={DATA.title}
+  description={DATA.description}
+  lang="es"
+  jsonLd={jsonLd}
+>
+  <!-- Hero -->
+  <section id="hero" class="relative overflow-hidden bg-surface-page">
+    <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-surface-page via-[#00002d] to-surface-card"
       >
-        <h2 class="text-2xl">{DATA.venue.title}</h2>
-      </AnimatedOnViewportEnter>
-      <AnimatedOnViewportEnter
-        animation="animate__animated animate__fadeInUp animate__delay-1s"
-      >
-        <span class="text-md font-bold"
-          >{`${DATA.venue.city}, ${formatDate(DATA.date)}`}
-        </span>
-      </AnimatedOnViewportEnter>
-      <div class="relative">
-        <svg
-          class="w-[700px] h-[700px] aspect-square absolute right-[-180px] top-[-400px] opacity-25 -rotate-[25deg] select-none"
-          style="-webkit-user-drag: none;"
-          width="94"
-          height="95"
-          viewBox="0 0 94 95"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="47.0004" cy="47.7363" r="46.9076" fill="white"></circle>
-          <circle cx="47.0004" cy="47.7363" r="46.9076" fill="white"></circle>
-          <path
-            d="M93.9081 47.7363C93.9081 73.6426 72.9068 94.6439 47.0004 94.6439C21.094 94.6439 0.0927734 73.6426 0.0927734 47.7363C0.0927734 21.8299 21.094 0.828613 47.0004 0.828613C72.9068 0.828613 93.9081 21.8299 93.9081 47.7363Z"
-            fill="#F53B16"></path>
-          <circle cx="47.0004" cy="47.7363" r="46.9076" fill="white"></circle>
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M45.1142 94.6066L36.5119 45.8205C35.4211 45.6228 34.3545 45.1917 33.3869 44.5142C29.8037 42.0052 28.9329 37.0665 31.4418 33.4833C33.9508 29.9001 38.8895 29.0293 42.4727 31.5383C46.0559 34.0473 46.9267 38.9859 44.4177 42.5691C43.6927 43.6046 42.7648 44.4135 41.7253 44.9799L50.4603 94.5182C49.3179 94.6014 48.1642 94.6438 47.0006 94.6438C46.3688 94.6438 45.7399 94.6313 45.1142 94.6066Z"
-            fill="#F53B16"></path>
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M47.3203 94.6429L56.7951 26.1091C56.3362 25.8884 55.8936 25.6159 55.4753 25.2907C52.3019 22.8228 51.73 18.2496 54.1979 15.0762C56.6657 11.9028 61.2389 11.3308 64.4123 13.7987C67.5857 16.2666 68.1577 20.8398 65.6898 24.0132C64.6298 25.3762 63.1813 26.2594 61.6222 26.6278L52.2593 94.3525C50.6365 94.5336 48.9888 94.6318 47.3203 94.6429Z"
-            fill="#FBBC05"></path>
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M45.5977 94.6235L71.1375 58.8021C68.7721 55.5408 69.3235 50.9591 72.4743 48.3606C75.7508 45.6586 80.5973 46.1242 83.2993 49.4007C86.0013 52.6771 85.5357 57.5236 82.2593 60.2257C80.2613 61.8734 77.6794 62.3431 75.3561 61.7159L52.0722 94.373C50.4061 94.5522 48.7139 94.6441 47.0002 94.6441C46.5311 94.6441 46.0635 94.6372 45.5977 94.6235Z"
-            fill="#229F43"></path>
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M45.0836 94.6056L16.9531 58.0253C15.3217 58.5848 13.4875 58.5755 11.768 57.8654C8.01773 56.3166 6.23305 52.0208 7.78183 48.2705C9.33062 44.5202 13.6264 42.7355 17.3767 44.2843C21.127 45.8331 22.9117 50.1288 21.3629 53.8791C21.2017 54.2695 21.0107 54.6386 20.7937 54.9849L51.1525 94.4628C49.7845 94.5828 48.3997 94.644 47.0006 94.644C46.3585 94.644 45.7194 94.6311 45.0836 94.6056Z"
-            fill="#388BFF"></path>
-        </svg>
       </div>
-    </section>
-  </header>
-  <section id="value" class="bg-light-background dark:bg-dark-background">
-    <div class="wrapper text-xl px-6">
-      <div class="xl:w-1/2 flex flex-col gap-5">
-        <RichText text={DATA.description} />
+      <Image
+        src={heroBackground}
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover opacity-20"
+        layout="full-width"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div
+      class="relative mx-auto max-w-[1240px] flex flex-col items-center text-center gap-8 px-6 py-24 md:py-32"
+    >
+      <span
+        class="font-display text-[10px] md:text-xs uppercase tracking-pixel text-text-secondary"
+      >
+        Costa del Sol · Tech Festival
+      </span>
+      <h1 class="w-full max-w-[1140px]">
+        <Image
+          src={biznagaWordmark}
+          alt="BiznagaFest 2026"
+          class="w-full h-auto"
+          layout="full-width"
+          loading="eager"
+        />
+      </h1>
+      <div
+        class="font-display text-base md:text-xl text-text-primary flex flex-col gap-2"
+      >
+        <p>{heroDateLabel}</p>
+        <p>{DATA.venue.title}</p>
+      </div>
+      <p
+        class="font-display text-xs md:text-sm text-accent-yellow animate-pulse"
+      >
+        Are you ready?
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 mt-2">
+        <PretixBuyButton
+          class="inline-flex items-center justify-center rounded-sm bg-action-primary px-6 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-action-primary-hover"
+        />
+        {
+          !!DATA.schedule.length && (
+            <a
+              href="#schedule"
+              class="inline-flex items-center justify-center rounded-sm border border-border-highlight px-6 py-3 font-sans text-sm font-semibold uppercase tracking-wide text-text-primary transition-colors hover:bg-surface-card"
+              data-umami-event="hero_agenda_cta"
+            >
+              Ver agenda
+            </a>
+          )
+        }
       </div>
     </div>
   </section>
+
+  <!-- Context + Stats -->
+  <section id="about" class="bg-surface-page">
+    <div
+      class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start"
+    >
+      <AnimatedOnViewportEnter animation="animate-fade-in-left">
+        <div class="flex flex-col gap-6">
+          <SectionHeader
+            eyebrow="El evento"
+            title="El gran encuentro tech de la Costa del Sol"
+          />
+          <div
+            class="flex flex-col gap-4 font-sans text-base text-text-primary/85 leading-relaxed [&_u]:text-accent-yellow [&_u]:underline [&_u]:underline-offset-2"
+          >
+            <RichText text={DATA.description} />
+          </div>
+        </div>
+      </AnimatedOnViewportEnter>
+      <AnimatedOnViewportEnter animation="animate-fade-in-up">
+        <div class="grid grid-cols-2 gap-4">
+          {
+            heroStats.map((stat) => (
+              <StatCard value={stat.value} label={stat.label} />
+            ))
+          }
+        </div>
+      </AnimatedOnViewportEnter>
+    </div>
+  </section>
+
+  <!-- Speakers -->
   {
-    !!DATA.schedule.length && (
-      <section
-        id="schedule"
-        class="bg-light-background dark:bg-dark-background"
-      >
-        <div class="wrapper-x p-6 pt-0 pb-28 md:pb-52">
-          <Schedule data={DATA.schedule} />
+    !!DATA.speakers.length && (
+      <section id="speakers" class="bg-surface-card border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Fighters"
+              title="Speakers"
+              subtitle="Referentes del ecosistema tech compartiendo ideas, experiencias y mucho conocimiento."
+            />
+          </AnimatedOnViewportEnter>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {DATA.speakers.map((speaker, index) => (
+              <Speaker speaker={speaker} index={index} />
+            ))}
+          </div>
         </div>
       </section>
     )
   }
+
+  <!-- Call for Papers -->
   {
-    !!DATA.hosts.length && (
+    DATA.callForPapers.isEnabled && (
       <section
-        id="hosts"
-        class="bg-light-background dark:bg-dark-background text-dark-background dark:text-light-background"
+        id="cfp"
+        class="relative overflow-hidden border-y border-accent-yellow/40 bg-surface-page"
       >
-        <div class="wrapper flex flex-col gap-10 px-6">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">
-              Presentadores
+        <div
+          aria-hidden="true"
+          class="absolute inset-0 pointer-events-none opacity-70 bg-[radial-gradient(circle_at_20%_30%,rgba(234,234,0,0.22),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(222,18,35,0.22),transparent_55%)]"
+        />
+        <div
+          aria-hidden="true"
+          class="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-accent-yellow via-accent-red to-action-secondary"
+        />
+        <div
+          aria-hidden="true"
+          class="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-action-secondary via-accent-red to-accent-yellow"
+        />
+
+        <div class="relative mx-auto max-w-310 px-6 py-20 md:py-28 flex flex-col items-center gap-8 text-center">
+          <AnimatedOnViewportEnter animation="animate-fade-in">
+            <span class="inline-flex items-center gap-2 rounded-sm border border-accent-yellow/60 bg-accent-yellow/10 px-3 py-1.5 font-display text-[10px] uppercase tracking-pixel text-accent-yellow animate-pulse">
+              <i class="ph ph-microphone-stage" aria-hidden="true" />
+              Player 1 Wanted · CFP Abierto
+            </span>
+          </AnimatedOnViewportEnter>
+
+          <AnimatedOnViewportEnter animation="animate-fade-in-up">
+            <h2 class="font-heading text-4xl md:text-6xl lg:text-7xl font-bold uppercase tracking-wide text-text-primary leading-[0.95] pixel-shadow">
+              <span class="block">¿Tienes algo que</span>
+              <span class="block text-accent-yellow">contar?</span>
             </h2>
           </AnimatedOnViewportEnter>
-          <div class="px-6 md:px-0 mx-auto flex flex-row flex-wrap gap-2 align-middle justify-center w-full">
+
+          <AnimatedOnViewportEnter animation="animate-fade-in-up">
+            <p class="max-w-2xl font-sans text-base md:text-lg text-text-primary/85 leading-relaxed">
+              El Call for Papers está
+              <strong class="text-accent-yellow">ABIERTO</strong>. Presenta tu
+              charla o workshop y sube al escenario más grande del sur.
+            </p>
+          </AnimatedOnViewportEnter>
+
+          <AnimatedOnViewportEnter animation="animate-fade-in-up">
+            <a
+              aria-label="Call for Papers Link"
+              class="group relative inline-flex items-center gap-3 rounded-sm bg-accent-yellow px-8 py-4 md:px-10 md:py-5 font-display text-sm md:text-base uppercase tracking-pixel text-text-inverse shadow-[0_0_0_3px_var(--color-action-secondary),0_0_24px_rgba(234,234,0,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_0_3px_var(--color-action-secondary),0_10px_36px_rgba(234,234,0,0.55)]"
+              href={DATA.callForPapers.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-umami-event="call_for_papers_click"
+            >
+              {DATA.callForPapers.title}
+              <i
+                class="ph ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+          </AnimatedOnViewportEnter>
+
+          <div class="inline-flex items-center gap-2 mt-2 font-display text-[10px] uppercase tracking-pixel text-text-secondary">
+            <span
+              aria-hidden="true"
+              class="inline-block h-2 w-2 rounded-full bg-accent-red animate-pulse"
+            />
+            Plazas limitadas · Selección por comité
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Hosts -->
+  {
+    !!DATA.hosts.length && (
+      <section id="hosts" class="bg-surface-page border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="The Ringmasters"
+              title="Hosts & MCs"
+              subtitle="Quienes guían la experiencia, conectan a la comunidad y dan ritmo al evento."
+              align="center"
+            />
+          </AnimatedOnViewportEnter>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {DATA.hosts.map((host, index) => (
               <Host host={host} index={index} />
             ))}
@@ -149,58 +302,462 @@ for (const [index, sponsor] of Object.entries(DATA.sponsors)) {
       </section>
     )
   }
-  {
-    !!DATA.speakers.length && (
-      <section
-        id="speakers"
-        class="bg-blue-50 dark:bg-green-800 dark:bg-opacity-30 text-dark-background dark:text-light-background"
-      >
-        <div class="wrapper flex flex-col gap-16 px-6">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">
-              Speakers
-            </h2>
-          </AnimatedOnViewportEnter>
 
-          <div class="flex flex-col align-middle justify-center md:grid md:grid-cols-2 gap-8 xl:gap-16 md:auto-rows-fr md:place-content-center px-6">
-            {DATA.speakers.map((speaker, index) => {
-              return <Speaker speaker={speaker} index={index} />;
-            })}
+  <!-- Schedule / Agenda -->
+  {
+    !!DATA.schedule.length && (
+      <section id="schedule" class="bg-surface-card border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Battle Plan"
+              title="Agenda"
+              subtitle="Charlas, talleres y descansos. Toca cada combate para ver detalles."
+            />
+          </AnimatedOnViewportEnter>
+          <Schedule data={DATA.schedule} />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Tickets -->
+  {
+    !!DATA.tickets.length && (
+      <section id="tickets" class="bg-surface-page border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Insert Coin"
+              title="Elige tu entrada"
+              align="center"
+            />
+          </AnimatedOnViewportEnter>
+          <AnimatedOnViewportEnter animation="animate-fade-in">
+            <div class="flex flex-col gap-6">
+              <TicketSection tickets={DATA.tickets} />
+            </div>
+          </AnimatedOnViewportEnter>
+          {!!DATA.companyTicketsNotice.enabled && (
+            <div class="mt-4 mx-auto max-w-3xl relative overflow-hidden rounded-md border border-border-highlight/40 bg-surface-card shadow-[0_4px_16px_rgba(0,0,0,0.45)]">
+              <span
+                aria-hidden="true"
+                class="absolute top-0 left-0 h-[3px] w-full bg-gradient-to-r from-action-secondary via-accent-blue to-accent-yellow"
+              />
+              <div class="flex flex-col sm:flex-row items-start gap-5 sm:gap-6 p-6 md:p-8">
+                <div class="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-md border border-border-highlight/60 bg-action-secondary/15 text-2xl text-accent-blue">
+                  <i class="ph ph-users-three" aria-hidden="true" />
+                </div>
+                <div class="flex flex-col gap-3 min-w-0">
+                  <span class="font-display text-[10px] uppercase tracking-pixel text-accent-blue">
+                    Co-op Mode
+                  </span>
+                  <h3 class="font-heading text-xl md:text-2xl font-bold uppercase text-text-primary tracking-wide leading-tight">
+                    {DATA.companyTicketsNotice.title}
+                  </h3>
+                  <div class="font-sans text-sm md:text-base text-text-primary/85 leading-relaxed [&_a]:text-accent-yellow [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-accent-blue [&_a]:transition-colors">
+                    <RichText text={DATA.companyTicketsNotice.description} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {DATA.tshirt && (
+            <div class="mt-4 relative overflow-hidden rounded-md border border-border-highlight/40 bg-surface-card shadow-[0_4px_16px_rgba(0,0,0,0.45)]">
+              <span
+                aria-hidden="true"
+                class="absolute top-0 left-0 h-[3px] w-full bg-gradient-to-r from-accent-yellow via-accent-red to-action-secondary"
+              />
+              <div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 lg:gap-10 p-6 md:p-10">
+                <div class="flex flex-col gap-3 text-center lg:text-left">
+                  <span class="font-display text-[10px] uppercase tracking-pixel text-accent-yellow">
+                    Bonus Drop
+                  </span>
+                  {DATA.tshirt.title && (
+                    <h4 class="font-heading text-2xl md:text-3xl font-bold uppercase text-text-primary leading-tight tracking-wide">
+                      {DATA.tshirt.title}
+                    </h4>
+                  )}
+                  <span
+                    aria-hidden="true"
+                    class="hidden lg:block h-[3px] w-14 rounded-sm bg-gradient-to-r from-accent-yellow to-accent-red"
+                  />
+                  {DATA.tshirt.subtitle && (
+                    <p class="font-sans text-sm md:text-base text-text-primary/80 leading-relaxed">
+                      {DATA.tshirt.subtitle}
+                    </p>
+                  )}
+                </div>
+                <div class="mx-auto w-full max-w-[280px]">
+                  <div class="rounded-md p-[2px] bg-gradient-to-br from-accent-yellow via-accent-red to-action-secondary">
+                    <div class="rounded-[6px] overflow-hidden bg-surface-page">
+                      {DATA.tshirt.type === "image" ? (
+                        <img
+                          class="w-full aspect-square object-cover"
+                          src={DATA.tshirt.url}
+                          alt={DATA.tshirt.title ?? "T-shirt"}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <video
+                          class="w-full aspect-square object-cover"
+                          src={DATA.tshirt.url}
+                          autoplay
+                          loop
+                          muted
+                          playsinline
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Sponsors -->
+  {
+    !!DATA.sponsors.length && (
+      <section id="sponsors" class="bg-surface-card border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Power-ups"
+              title="Sponsors"
+              subtitle="Empresas y comunidades que impulsan el ecosistema tech y hacen posible BiznagaFest."
+            />
+          </AnimatedOnViewportEnter>
+          {sponsorTierOrder.map((tier) => {
+            const tierSponsors = sponsorsByTier[tier];
+            if (!tierSponsors.length) return null;
+            const cols =
+              tier === "platinum" || tier === "gold"
+                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                : tier === "silver" || tier === "bronze"
+                  ? "grid-cols-2 md:grid-cols-4"
+                  : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6";
+            return (
+              <div class="flex flex-col gap-4">
+                <span class="font-display text-[10px] uppercase tracking-pixel text-accent-yellow">
+                  {sponsorTierLabels[tier]}
+                </span>
+                <div class:list={["grid gap-4", cols]}>
+                  {tierSponsors.map((sponsor) => (
+                    <Sponsor sponsor={sponsor} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Transparency / Where the money goes -->
+  <section
+    id="transparency"
+    class="relative bg-surface-page border-t border-border/40 overflow-hidden"
+  >
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_15%_20%,rgba(89,159,255,0.12),transparent_55%),radial-gradient(circle_at_85%_90%,rgba(234,234,0,0.08),transparent_60%)]"
+    >
+    </div>
+
+    <div
+      class="relative mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10"
+    >
+      <AnimatedOnViewportEnter animation="animate-fade-in-left">
+        <SectionHeader
+          eyebrow="Transparencia"
+          title="¿En qué se invierte cada euro?"
+        />
+      </AnimatedOnViewportEnter>
+
+      <AnimatedOnViewportEnter animation="animate-fade-in-up">
+        <p
+          class="max-w-3xl font-sans text-base md:text-lg text-text-primary/85 leading-relaxed"
+        >
+          <strong class="text-accent-yellow"
+            >BiznagaFest es un evento sin ánimo de lucro organizado íntegramente
+            por voluntarios</strong
+          >. Los acuerdos de patrocinio y la venta de entradas son los recursos
+          que hacen posible cada edición y se destinan por completo a la
+          celebración del festival.
+        </p>
+      </AnimatedOnViewportEnter>
+
+      <AnimatedOnViewportEnter animation="animate-fade-in-up">
+        <ul
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
+        >
+          {
+            [
+              {
+                icon: "ph-airplane-tilt",
+                label:
+                  "Vuelos, hospedaje y dietas para quienes vienen a dar charlas",
+              },
+              {
+                icon: "ph-monitor-play",
+                label:
+                  "Equipos de proyección y sonido profesional en cada sala",
+              },
+              {
+                icon: "ph-video-camera",
+                label: "Cobertura audiovisual: equipo de fotografía y vídeo",
+              },
+              {
+                icon: "ph-fork-knife",
+                label:
+                  "Manutención del equipo: speakers, sponsors, organización, voluntariado y staff externo",
+              },
+              {
+                icon: "ph-gift",
+                label: "Welcome pack y obsequios para todos los asistentes",
+              },
+              {
+                icon: "ph-paint-brush",
+                label: "Diseño e impresión de cartelería y material gráfico",
+              },
+              {
+                icon: "ph-clipboard-text",
+                label:
+                  "Logística operativa: alquiler de mobiliario, accesos y aparcamiento",
+              },
+              {
+                icon: "ph-hand-coins",
+                label:
+                  "Donamos a causas solidarias lo recaudado por la comida de los asistentes",
+              },
+              {
+                icon: "ph-receipt",
+                label:
+                  "Pago del canon correspondiente por cada comensal del evento",
+              },
+            ].map((item) => (
+              <li class="group relative flex items-start gap-4 rounded-md border border-border bg-surface-card p-5 md:p-6 transition-all duration-300 hover:border-border-highlight hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.45)]">
+                <span
+                  aria-hidden="true"
+                  class="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-md border border-border-highlight/50 bg-action-secondary/15 text-2xl text-accent-blue transition-colors duration-300 group-hover:text-accent-yellow group-hover:border-accent-yellow/60"
+                >
+                  <i class={`ph ${item.icon}`} />
+                </span>
+                <span class="font-sans text-sm md:text-base text-text-primary/85 leading-relaxed">
+                  {item.label}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </AnimatedOnViewportEnter>
+    </div>
+  </section>
+
+  <!-- Sponsors CTA -->
+  {
+    DATA.sponsorsDossier.enabled && (
+      <section id="callForSponsors">
+        <SponsorsCta
+          title="Haz visible tu marca en BiznagaFest"
+          description="Posiciona tu empresa frente a cientos de asistentes, speakers y profesionales del ecosistema tecnológico."
+          ctaHref="#sponsor-form"
+          ctaLabel="Quiero patrocinar"
+        />
+        <div class="mx-auto max-w-[1240px] px-6 py-16 md:py-20 flex flex-col gap-8 bg-surface-page">
+          <div class="flex flex-col gap-6">
+            <SponsorDossier
+              dossier={DATA.sponsorsDossier}
+              class="mx-auto w-fit flex flex-col gap-2 items-center"
+            />
+            <p class="text-center font-sans text-sm text-text-primary/80">
+              ¿Prefieres email?{" "}
+              <a
+                class="font-semibold text-accent-yellow underline underline-offset-2 hover:text-accent-blue"
+                href="mailto:biznagafest@gmail.com"
+                data-umami-event="sponsor_email_contact"
+              >
+                biznagafest@gmail.com
+              </a>
+            </p>
+          </div>
+          <div id="sponsor-form">
+            <SponsorForm className="flex flex-col gap-4" client:idle />
           </div>
         </div>
       </section>
     )
   }
+
+  <!-- Venue -->
+  <section id="venue" class="bg-surface-card border-t border-border/40">
+    <div
+      class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10"
+    >
+      <AnimatedOnViewportEnter animation="animate-fade-in-left">
+        <SectionHeader
+          eyebrow="The Arena"
+          title="Donde sucede todo"
+          subtitle="BiznagaFest crece y estrena escenario: FYCMA – Palacio de Ferias y Congresos de Málaga. Más espacio, mejor acceso y una edición preparada para vivir un evento a otro nivel."
+        />
+      </AnimatedOnViewportEnter>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <div
+          class="rounded-md overflow-hidden border border-border bg-surface-page min-h-[320px]"
+        >
+          <iframe
+            title="Venue map"
+            class="w-full h-full min-h-[320px]"
+            src={DATA.venue.mapUrl}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            width="100%"
+            height="100%"></iframe>
+        </div>
+        <div
+          class="flex flex-col gap-6 rounded-md border border-border bg-surface-page p-6 md:p-8"
+        >
+          <h3
+            class="font-heading text-2xl md:text-3xl font-bold uppercase text-text-primary"
+          >
+            {DATA.venue.title}
+          </h3>
+          <p class="font-sans text-sm md:text-base text-text-primary/85">
+            {DATA.venue.address}
+          </p>
+          <ul class="flex flex-col gap-4">
+            {
+              DATA.venue.howToArrive?.howToArriveByMetro && (
+                <li class="flex items-start gap-3 font-sans text-sm text-text-primary/90">
+                  <i class="ph ph-train text-xl text-accent-blue mt-0.5" />
+                  <div class="flex-1 [&>ul]:list-disc [&>ul]:list-inside">
+                    <RichText
+                      text={DATA.venue.howToArrive.howToArriveByMetro}
+                    />
+                  </div>
+                </li>
+              )
+            }
+            {
+              DATA.venue.howToArrive?.howToArriveByBus && (
+                <li class="flex items-start gap-3 font-sans text-sm text-text-primary/90">
+                  <i class="ph ph-bus text-xl text-accent-blue mt-0.5" />
+                  <div class="flex-1 [&>ul]:list-disc [&>ul]:list-inside">
+                    <RichText text={DATA.venue.howToArrive.howToArriveByBus} />
+                  </div>
+                </li>
+              )
+            }
+            {
+              DATA.venue.howToArrive?.howToArriveByBike && (
+                <li class="flex items-start gap-3 font-sans text-sm text-text-primary/90">
+                  <i class="ph ph-bicycle text-xl text-accent-blue mt-0.5" />
+                  <div class="flex-1 [&>ul]:list-disc [&>ul]:list-inside">
+                    <RichText text={DATA.venue.howToArrive.howToArriveByBike} />
+                  </div>
+                </li>
+              )
+            }
+          </ul>
+          <a
+            href={DATA.venue.mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex w-fit items-center gap-2 rounded-sm border border-border-highlight px-5 py-2.5 font-sans text-sm font-semibold uppercase tracking-wide text-text-primary transition-colors hover:bg-surface-card"
+            data-umami-event="venue_directions_click"
+          >
+            <i class="ph ph-map-pin"></i>
+            Cómo llegar
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Previous Edition -->
+  {
+    (DATA.lastEdition?.lastEditionVideoUrl ||
+      !!DATA.lastEdition?.gallery?.length) && (
+      <section id="last" class="bg-surface-page border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Last Round"
+              title="Última edición"
+              subtitle="Así fue BiznagaFest 2025"
+            />
+          </AnimatedOnViewportEnter>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {previousEditionStats.map((stat) => (
+              <StatCard value={stat.value} label={stat.label} />
+            ))}
+          </div>
+          {!!DATA.lastEdition?.gallery?.length && (
+            <Carousel
+              navigation={true}
+              pagination={true}
+              class="w-full aspect-video rounded-md overflow-hidden border border-border"
+              videoUrl={DATA.lastEdition?.lastEditionVideoUrl}
+              images={DATA.lastEdition?.gallery ?? []}
+            />
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Hall of Fame -->
   {
     !!DATA.hallOfFame.length && (
       <section
         id="hallOfFame"
-        class="bg-blue-50 dark:bg-green-800 dark:bg-opacity-30 text-dark-background dark:text-light-background"
+        class="relative bg-surface-card border-t border-border/40 overflow-hidden"
       >
-        <div class="wrapper flex flex-col gap-16 px-6 ">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">
-              Han pasado por aquí
-            </h2>
+        <div
+          aria-hidden="true"
+          class="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(circle_at_50%_-10%,rgba(89,159,255,0.18),transparent_55%),radial-gradient(circle_at_80%_110%,rgba(234,234,0,0.08),transparent_60%)]"
+        />
+
+        <div class="relative mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Hall of Fame"
+              title="Han pasado por aquí"
+              align="center"
+            />
           </AnimatedOnViewportEnter>
 
-          <ul class="flex flex-row gap-2 flex-wrap items-stretch justify-center">
+          <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
             {DATA.hallOfFame.map((personality) => (
-              <li class="flex-1 sm:flex-grow-0 min-w-fit bg-white dark:bg-dark-background flex flex-col gap-2 px-10 py-8 rounded-md bg-center bg-cover relative overflow-hidden select-none pointer-events-none">
+              <li class="group relative overflow-hidden rounded-md border border-border bg-surface-page aspect-square transition-all duration-300 hover:border-accent-yellow hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(234,234,0,0.22)]">
                 <Image
                   src={personality.picture}
                   alt={`Image of ${personality.name}`}
-                  height={150}
-                  width={150}
-                  class="absolute top-0 left-0 w-full h-full object-cover opacity-40"
+                  height={400}
+                  width={400}
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                   loading="lazy"
                 />
-                <span class="text-center text-black dark:text-white font-extrabold z-10 drop-shadow-md">
-                  {personality.name}
-                </span>
-                <span class="text-center text-sm z-10">
+                <div
+                  aria-hidden="true"
+                  class="absolute inset-0 bg-gradient-to-t from-surface-page via-surface-page/60 to-transparent"
+                />
+                <span class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-sm border border-border-highlight/60 bg-surface-card/80 px-2 py-1 font-display text-[9px] tracking-pixel text-accent-yellow backdrop-blur-sm">
+                  <i class="ph ph-trophy text-[10px]" aria-hidden="true" />
                   {personality.edition}
                 </span>
+                <div class="absolute inset-x-0 bottom-0 p-3 md:p-4">
+                  <span class="block font-heading font-bold uppercase text-text-primary text-sm md:text-base leading-tight tracking-wide">
+                    {personality.name}
+                  </span>
+                  <span class="block mt-1 h-[2px] w-8 bg-accent-yellow transition-all duration-300 group-hover:w-16" />
+                </div>
               </li>
             ))}
           </ul>
@@ -208,380 +765,38 @@ for (const [index, sponsor] of Object.entries(DATA.sponsors)) {
       </section>
     )
   }
-  {
-    DATA.callForPapers.isEnabled && (
-      <section class="bg-blue-50 dark:bg-green-800 dark:bg-opacity-30 text-dark-background dark:text-light-background py-10 grid place-items-center">
-        <a
-          aria-label="Call for Papers Link"
-          class="animate-bounce w-fit px-3 py-2 rounded-md text-xl bg-blue-600 hover:bg-blue-500 text-white dark:bg-green-300 dark:text-black dark:hover:bg-green-200 cursor-pointer"
-          href={DATA.callForPapers.url}
-          target="_blank"
-          data-umami-event="call_for_papers_click"
-        >
-          {DATA.callForPapers.title}
-        </a>
-      </section>
-    )
-  }
-  {
-    !!DATA.sponsors.length && (
-      <section
-        id="sponsors"
-        class="bg-light-background dark:bg-dark-background"
-      >
-        <div class="wrapper flex flex-col gap-16 px-6">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">
-              Sponsors
-            </h2>
-          </AnimatedOnViewportEnter>
-          {!!sponsors.platinum.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Platinum
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.platinum.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.gold.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Gold
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.gold.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.silver.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Silver
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.silver.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.bronze.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Bronze
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.bronze.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.communitySponsor.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Community Sponsors
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.communitySponsor.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.media.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Media
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.media.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.community.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Community Partners
-              </h3>
-              <article class="flex flex-row flex-wrap gap-4 md:gap-8 justify-center align-middle px-6">
-                {sponsors.community.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.supporter.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Supporters
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.supporter.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-          {!!sponsors.food.length && (
-            <section class="flex flex-col gap-5">
-              <h3 class="text-green-400 dark:text-blue-200 text-3xl font-semibold text-center">
-                Fooding & Goodies Partners
-              </h3>
-              <article class="flex flex-row flex-wrap gap-8 justify-center align-middle px-6">
-                {sponsors.food.map((sponsor) => (
-                  <Sponsor sponsor={sponsor} />
-                ))}
-              </article>
-            </section>
-          )}
-        </div>
-      </section>
-    )
-  }
-  {
-    DATA.sponsorsDossier.enabled && (
-      <section
-        id="callForSponsors"
-        class="p-10 flex flex-col gap-4 text-dark-background dark:text-light-background wrapper"
-      >
-        <h3 class="text-green-400 dark:text-green-200 text-3xl font-semibold text-center">
-          Patrocina el evento
-        </h3>
-        <div class="flex flex-col gap-10">
-          <SponsorDossier
-            dossier={DATA.sponsorsDossier}
-            class="mx-auto w-fit flex flex-col gap-2 items-center"
-          />
-          <p class="text-center text-dark-background dark:text-light-background">
-            Si quieres patrocinar el evento, puedes ponerte en contacto a través
-            de este formulario o mandando un correo a{" "}
-            <a
-              class="font-semibold text-green-400"
-              href="mailto:biznagafest@gmail.com"
-              data-umami-event="sponsor_email_contact"
-            >
-              biznagafest@gmail.com
-            </a>
-            .
-          </p>
-        </div>
-        <SponsorForm className="flex flex-col gap-4" client:idle />
-      </section>
-    )
-  }
-  {
-    !!DATA.tickets.length && (
-      <section
-        id="tickets"
-        class="bg-yellow-100 dark:bg-blue-900 dark:bg-opacity-30 "
-      >
-        <div class="wrapper flex flex-col gap-10 px-6 mx-auto">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">
-              Elige tu entrada
-            </h2>
-          </AnimatedOnViewportEnter>
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeIn">
-            <div class="flex flex-col gap-5">
-              <TicketSection tickets={DATA.tickets} />
-              <div class="flex justify-center">
-                <PretixBuyButton
-                  class="text-white text-lg px-6 py-3 rounded-lg bg-green-600 hover:bg-green-400 dark:bg-blue-600 dark:hover:bg-blue-400 transition-colors"
-                />
-              </div>
-            </div>
-          </AnimatedOnViewportEnter>
 
-          {DATA.tshirt && (
-            <div class="flex flex-col gap-8 lg:gap-2 lg:flex-row items-center justify-between bg-yellow-200 dark:bg-green-800 dark:bg-opacity-30 rounded-lg p-8">
-              <div class="flex flex-col items-center gap-2">
-                {DATA.tshirt.title && (
-                  <h4 class="text-xl md:text-2xl lg:text-3xl font-bold text-center">
-                    {DATA.tshirt.title}
-                  </h4>
-                )}
-                {DATA.tshirt.subtitle && (
-                  <span class="text-md md:text-lg lg:text-xl text-center">
-                    {DATA.tshirt.subtitle}
-                  </span>
-                )}
-              </div>
-              <div class="ml-auto rounded-md overflow-hidden max-w-sm border-green-600 dark:border-green-900 border-4 md:border-8 mx-auto lg:mx-0">
-                {DATA.tshirt.type === "image" ? (
-                  <img
-                    class="w-full aspect-square"
-                    src={DATA.tshirt.url}
-                    alt={DATA.tshirt.title ?? "T-shirt"}
-                    loading="lazy"
-                  />
-                ) : (
-                  <video
-                    class="w-full aspect-square"
-                    src={DATA.tshirt.url}
-                    autoplay
-                    loop
-                    muted
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {!!DATA.companyTicketsNotice.enabled && (
-            <Notice>
-              <div class="mx-auto max-w-lg rounded-md w-fit p-4 flex flex-col gap-5 px-6 bg-blue-50 dark:bg-green-800 dark:bg-opacity-30 text-dark-background dark:text-light-background [&>p]:text-md md:[&>p]:text-lg">
-                <h3 class="text-xl md:text-2xl lg:text-3xl font-bold">
-                  {DATA.companyTicketsNotice.title}
-                </h3>
-                <RichText text={DATA.companyTicketsNotice.description} />
-              </div>
-            </Notice>
-          )}
-        </div>
-      </section>
-    )
-  }
+  <!-- FAQ -->
   {
     !!DATA.faq.length && (
-      <section
-        id="faq"
-        class="bg-light-background dark:bg-dark-background text-dark-background dark:text-light-background"
-      >
-        <div class="wrapper flex flex-col gap-10 px-6">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">FAQ</h2>
-          </AnimatedOnViewportEnter>
-          <div class="block lg:grid lg:grid-cols-[4fr_3fr] px-2 md:px-0">
-            <Accordion data={DATA.faq} />
-          </div>
-        </div>
-      </section>
-    )
-  }
-  <section id="venue" class="bg-yellow-100 dark:bg-blue-900 dark:bg-opacity-30">
-    <div
-      class="flex flex-col lg:grid lg:grid-cols-2 gap-6 max-w-[2000px] mx-auto"
-    >
-      <div
-        class="flex flex-col gap-6 md:mx-auto px-6 xl:px-48 h-full pt-16 pb-28 md:pt-32 md:pb-52"
-      >
-        <AnimatedOnViewportEnter
-          animation="animate__animated animate__fadeInLeft"
-        >
-          <h2 class="text-3xl font-bold text-center md:text-left">Ubicación</h2>
-        </AnimatedOnViewportEnter>
-
-        <h3 class="text-xl font-semibold">
-          {DATA.venue.title}
-        </h3>
-
-        <p>Para llegar al evento puedes usar:</p>
-
-        <ul class="flex flex-col gap-6">
-          {
-            DATA.venue.howToArrive?.howToArriveByBus && (
-              <li>
-                <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-                  <span class="text-xl font-semibold">
-                    <i class="text-2xl ph ph-bus" /> Autobús
-                  </span>
-                  <div class="ml-7 list [&>ul]:list-disc [&>ul]:list-inside">
-                    <RichText text={DATA.venue.howToArrive.howToArriveByBus} />
-                  </div>
-                </AnimatedOnViewportEnter>
-              </li>
-            )
-          }
-          {
-            DATA.venue.howToArrive?.howToArriveByBike && (
-              <li>
-                <AnimatedOnViewportEnter animation="animate__animated animate__fadeInUp">
-                  <span class="text-xl font-semibold">
-                    <i class="text-2xl ph ph-bicycle" /> Bicicleta
-                  </span>
-                  <div class="ml-7 list [&>ul]:list-disc [&>ul]:list-inside">
-                    <RichText text={DATA.venue.howToArrive.howToArriveByBike} />
-                  </div>
-                </AnimatedOnViewportEnter>
-              </li>
-            )
-          }
-          {
-            DATA.venue.howToArrive?.howToArriveByMetro && (
-              <li>
-                <AnimatedOnViewportEnter animation="animate__animated animate__fadeInRight">
-                  <span class="text-xl font-semibold">
-                    <i class="text-2xl ph ph-train" />
-                    Metro
-                  </span>
-                  <div class="ml-7 list [&>ul]:list-disc [&>ul]:list-inside">
-                    <RichText
-                      text={DATA.venue.howToArrive.howToArriveByMetro}
-                    />
-                  </div>
-                </AnimatedOnViewportEnter>
-              </li>
-            )
-          }
-        </ul>
-      </div>
-      <iframe
-        title="Venue map"
-        class="h-full w-full min-h-[600px]"
-        src={DATA.venue.mapUrl}
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        width="100%"
-        height="100%"></iframe>
-    </div>
-  </section>
-
-  {
-    (DATA.lastEdition?.lastEditionVideoUrl ||
-      !!DATA.lastEdition?.gallery?.length) && (
-      <section
-        id="last"
-        class="bg-light-background dark:bg-dark-background text-dark-background dark:text-light-background"
-      >
-        <div class="wrapper">
-          <div class="pt-16 md:pt-32 flex flex-col gap-10">
-            <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-              <h2 class="md:mx-auto text-3xl font-bold text-center md:text-left px-6">
-                Última Edición
-              </h2>
-            </AnimatedOnViewportEnter>
-            <Carousel
-              navigation={true}
-              pagination={true}
-              class="w-full aspect-video sm:rounded-md"
-              videoUrl={DATA.lastEdition?.lastEditionVideoUrl}
-              images={DATA.lastEdition?.gallery ?? []}
+      <section id="faq" class="bg-surface-card border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Pause Menu"
+              title="Preguntas frecuentes"
+              align="center"
             />
-          </div>
+          </AnimatedOnViewportEnter>
+          <Accordion data={DATA.faq} />
         </div>
       </section>
     )
   }
+
+  <!-- Team / Organizers -->
   {
     !!DATA.team.organizers.length && (
-      <section
-        id="team"
-        class="bg-blue-50 dark:bg-green-800 dark:bg-opacity-30 text-dark-background dark:text-light-background"
-      >
-        <div class="wrapper flex flex-col gap-10 px-6">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">Equipo</h2>
+      <section id="team" class="bg-surface-page border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Crew"
+              title="Equipo"
+              subtitle="Las personas que organizan BiznagaFest."
+            />
           </AnimatedOnViewportEnter>
-          <div class="px-6 md:px-0 mx-auto flex flex-row flex-wrap gap-2 align-middle justify-center w-full">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {DATA.team.organizers.map((member, index) => (
               <TeamMember kind="organizer" member={member} index={index} />
             ))}
@@ -590,19 +805,20 @@ for (const [index, sponsor] of Object.entries(DATA.sponsors)) {
       </section>
     )
   }
+
+  <!-- Staff -->
   {
     !!DATA.team.staff.length && (
-      <section
-        id="staff"
-        class="bg-light-background dark:bg-dark-background text-dark-background dark:text-light-background"
-      >
-        <div class="wrapper flex flex-col gap-10 px-6">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
-            <h2 class="text-3xl font-bold text-center md:text-left">
-              Voluntarios
-            </h2>
+      <section id="staff" class="bg-surface-card border-t border-border/40">
+        <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
+            <SectionHeader
+              eyebrow="Squad"
+              title="Voluntarios"
+              subtitle="El equipo de soporte que hace posible cada edición."
+            />
           </AnimatedOnViewportEnter>
-          <div class="px-6 md:px-0 mx-auto flex flex-row flex-wrap gap-2 align-middle justify-center w-full">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
             {DATA.team.staff.map((member, index) => (
               <TeamMember kind="staff" member={member} index={index} />
             ))}

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BiznagaFest is a technology conference/festival event website built with Astro 5, deployed to Vercel with serverless functions. The site features speaker profiles, sponsor showcases, event schedules, ticket sales, raffles, and team member profiles. The architecture supports both local data mode and CMS integration for flexible content management.
+BiznagaFest is a technology conference/festival event website built with Astro 6, deployed as a Node.js standalone server. The site features speaker profiles, sponsor showcases, event schedules, ticket sales, raffles, and team member profiles. The architecture supports both local data mode and CMS integration for flexible content management.
 
 ## Development Commands
 
@@ -129,7 +129,6 @@ Umami analytics is configured in `CommonHead.astro` with comprehensive event tra
 
 ## Deployment
 
-- **Platform**: Vercel
-- **Adapter**: `@astrojs/vercel/serverless`
-- **Analytics**: Vercel Web Analytics + Umami (self-hosted)
-- **Build Output**: `.vercel/output/`
+- **Adapter**: `@astrojs/node` in `standalone` mode (see `astro.config.mjs`).
+- **Analytics**: Umami (self-hosted at `https://analytics.davidrojom.com`).
+- **Build Output**: `dist/` (server entry: `dist/server/entry.mjs`).

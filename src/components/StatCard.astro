@@ -1,0 +1,27 @@
+---
+interface Props {
+  value: string;
+  label: string;
+  stroke?: boolean;
+  class?: string;
+}
+
+const { value, label, stroke = true, class: className = "" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "flex flex-col gap-1.5 px-6 py-5 rounded-md bg-surface-card",
+    stroke && "border border-border",
+    className,
+  ]}
+>
+  <p
+    class="font-heading font-bold leading-[1.1] text-4xl md:text-5xl bg-gradient-to-b from-accent-yellow to-accent-red bg-clip-text text-transparent"
+  >
+    {value}
+  </p>
+  <p class="font-sans text-[13px] text-text-secondary/80 leading-snug">
+    {label}
+  </p>
+</div>

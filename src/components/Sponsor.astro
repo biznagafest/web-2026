@@ -8,66 +8,41 @@ interface Props {
 
 const { sponsor } = Astro.props;
 
-const sponsorWitdths: Record<
-  SponsorTier,
-  {
-    initialWidth: number;
-    afterLoadWidth: string;
-  }
-> = {
-  platinum: {
-    initialWidth: 550,
-    afterLoadWidth: "w-[400px] md:w-[450px]",
-  },
-  gold: {
-    initialWidth: 500,
-    afterLoadWidth: "w-[350px] md:w-[400px]",
-  },
-  silver: {
-    initialWidth: 450,
-    afterLoadWidth: "w-[300px] md:w-[350px]",
-  },
-  bronze: {
-    initialWidth: 380,
-    afterLoadWidth: "w-[250px] md:w-[300px]",
-  },
-  communitySponsor: {
-    initialWidth: 300,
-    afterLoadWidth: "w-[250px] md:w-[300px]",
-  },
-  media: {
-    initialWidth: 300,
-    afterLoadWidth: "w-[200px] md:w-[250px]",
-  },
-  food: {
-    initialWidth: 200,
-    afterLoadWidth: "w-[150px] md:w-[200px]",
-  },
-  community: {
-    initialWidth: 150,
-    afterLoadWidth: "w-[100px] md:w-[150px]",
-  },
-  supporter: {
-    initialWidth: 150,
-    afterLoadWidth: "w-[100px] md:w-[150px]",
-  },
+const tierHeights: Record<SponsorTier, string> = {
+  platinum: "h-20 md:h-24",
+  gold: "h-20 md:h-24",
+  silver: "h-16 md:h-20",
+  bronze: "h-14 md:h-16",
+  communitySponsor: "h-14 md:h-16",
+  media: "h-12 md:h-14",
+  food: "h-12 md:h-14",
+  community: "h-10 md:h-12",
+  supporter: "h-10 md:h-12",
 };
 
-const { initialWidth, afterLoadWidth } = sponsorWitdths[sponsor.tier];
+const cardHeight = tierHeights[sponsor.tier];
 ---
 
 <a
   aria-label={`Visit ${sponsor.name}'s website`}
-  transition:name={sponsor.name}
-  href={sponsor.hasFeaturedPage ? `/sponsor/${sponsor.name}#top` : sponsor.url}
+  href={sponsor.hasFeaturedPage ? `/sponsor/${encodeURIComponent(sponsor.name)}` : sponsor.url}
   data-umami-event="sponsor_link_click"
-  class="transition-all grid place-content-center hover:scale-105 duration-300 ease-in-out grayscale hover:grayscale-0"
+  target={sponsor.hasFeaturedPage ? undefined : "_blank"}
+  rel={sponsor.hasFeaturedPage ? undefined : "noopener noreferrer"}
+  class="group flex items-center justify-center rounded-md border border-border bg-surface-card/60 p-3 transition-all duration-300 hover:border-border-highlight w-full"
 >
-  <Image
-    src={sponsor.picture}
-    alt={`Logo of ${sponsor.name}`}
-    width={initialWidth}
-    height={initialWidth / 2}
-    class:list={[afterLoadWidth, ["aspect-[2/1] object-contain"]]}
-  />
+  <span
+    class="flex w-full items-center justify-center rounded-sm bg-text-primary/[0.06] px-4 py-3 transition-colors duration-300 group-hover:bg-text-primary/[0.12]"
+  >
+    <Image
+      src={sponsor.picture}
+      alt={`Logo of ${sponsor.name}`}
+      width={400}
+      height={120}
+      class:list={[
+        "w-auto max-w-full object-contain opacity-90 transition-opacity duration-300 group-hover:opacity-100",
+        cardHeight,
+      ]}
+    />
+  </span>
 </a>

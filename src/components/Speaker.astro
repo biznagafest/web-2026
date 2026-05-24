@@ -10,35 +10,43 @@ interface Props {
 const { speaker, index } = Astro.props;
 ---
 
-<div
-  class="flex flex-col align-middle justify-center lg:grid lg:grid-cols-[2fr_3fr] lg:gap-5 mx-auto"
+<a
+  aria-label={`Go to ${speaker.name}'s profile`}
+  href={`/speaker/${index}`}
+  data-umami-event="speaker_profile_click"
+  class="flex flex-col rounded-md bg-surface-card overflow-hidden shadow-card transition-all duration-300 hover:-translate-y-1"
 >
-  <a
-    aria-label={`Go to ${speaker.name}'s profile`}
+  <div
     transition:name={`picture-speaker-${index}`}
-    href={`/speaker/${index}#top`}
-    data-umami-event="speaker_profile_click"
-    class="w-[200px] h-[200px] mx-auto block rounded-full shadow-md overflow-hidden"
+    class="relative aspect-[292/240] w-full overflow-hidden bg-surface-page"
   >
     <Image
       src={speaker.picture}
       alt={`Picture of ${speaker.name}`}
-      class="object-cover select-none mx-auto aspect-square w-[200px] h-[200px] hover:scale-110 transition-transform duration-500 ease-in-out"
+      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500"
       style="-webkit-user-drag: none;"
-      height={200}
-      width={200}
+      height={240}
+      width={292}
     />
-  </a>
-  <div
-    class="flex flex-col align-middle justify-center gap-1 md:gap-3 py-[0px] text-center lg:text-left"
-  >
-    <h3 transition:name={`name-speaker-${index}`} class="text-2xl font-bold">
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-transparent via-surface-card/5 to-surface-card pointer-events-none"
+      aria-hidden="true"
+    >
+    </div>
+  </div>
+  <div class="flex flex-col gap-1 px-4 py-3">
+    <h3
+      transition:name={`name-speaker-${index}`}
+      class="font-heading text-xl font-bold tracking-wide text-text-primary leading-tight truncate"
+    >
       {speaker.name}
     </h3>
     {
-      speaker.position !== undefined && (
-        <span class="text-sm">{speaker.position}</span>
+      speaker.position && (
+        <span class="font-sans text-[13px] text-text-secondary/80 truncate">
+          {speaker.position}
+        </span>
       )
     }
   </div>
-</div>
+</a>

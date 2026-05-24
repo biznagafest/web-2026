@@ -7,7 +7,7 @@ interface Props {
 <a
   aria-label="Go to top"
   class:list={[
-    "animate__animated animate__fadeIn hidden opacity-40 hover:opacity-100 transition-opacity transition-transform hover:animate-bounce z-50",
+    "animate-fade-in hidden opacity-60 hover:opacity-100 transition-opacity text-accent-yellow hover:text-accent-blue z-50",
     Astro.props.class,
   ]}
   id="buttonUp"
@@ -17,13 +17,11 @@ interface Props {
   <i class="text-5xl ph ph-arrow-square-up"></i></a
 >
 
-<script>
-  function init() {
+<script is:inline data-astro-rerun>
+  (() => {
     const btnUp = document.getElementById("buttonUp");
+    if (!btnUp) return;
 
-    if (!btnUp) {
-      return;
-    }
     window.onscroll = function () {
       if (window.scrollY > 100) {
         btnUp.classList.remove("hidden");
@@ -33,13 +31,7 @@ interface Props {
     };
 
     btnUp.onclick = function () {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     };
-  }
-
-  document.addEventListener("astro:page-load", init);
+  })();
 </script>

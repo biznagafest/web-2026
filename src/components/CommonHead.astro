@@ -6,11 +6,21 @@ interface Props {
   title: string;
   description: string;
   image?: string;
+  noIndex?: boolean;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-// const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const {
+  image = "/BIZNAGAFEST-2026-OPENGRAPH.webp",
+  description,
+  title,
+  noIndex = false,
+  jsonLd,
+} = Astro.props;
 
-const { image = "/favicon.svg", description, title } = Astro.props;
+const siteName = DATA.title;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const imageURL = new URL(image, Astro.site ?? Astro.url).toString();
 
 const ticketsUrl = DATA.ticketsUrl?.trim();
 let pretixOrigin: string | null = null;
@@ -31,17 +41,103 @@ if (ticketsUrl) {
 
 <head>
   <ClientRouter />
-  <!-- Animate.css CDN -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
-
+  <!--
+    Defensive history sync: ClientRouter occasionally completes the DOM swap without
+    calling history.pushState (race conditions between aborted in-flight navigations and
+    view transition timing). If after a swap the URL doesn't match the target captured at
+    before-preparation, we push it manually so the browser back button stays consistent.
+  -->
+  <script is:inline>
+    (() => {
+      let pendingTarget = null;
+      document.addEventListener("astro:before-preparation", (e) => {
+        if (e && e.to && e.navigationType !== "traverse") {
+          pendingTarget = e.to.href;
+        } else {
+          pendingTarget = null;
+        }
+      });
+      document.addEventListener("astro:after-swap", () => {
+        const target = pendingTarget;
+        pendingTarget = null;
+        if (!target) return;
+        if (location.href !== target) {
+          try {
+            history.pushState(history.state || {}, "", target);
+          } catch {}
+        }
+      });
+    })();
+  </script>
+  <!--
+    Umami's auto-track click handler on data-umami-event anchors calls preventDefault()
+    and then hard-reloads via location.href, which breaks ClientRouter SPA navigation.
+    We disable Umami auto-track (data-auto-track="false") and replicate the parts we
+    need manually — pageview on initial load + on every astro:after-swap, and a click
+    listener that calls umami.track() without preventing navigation.
+  -->
+  <script is:inline>
+    (() => {
+      function extractEventData(el) {
+        const data = {};
+        for (const attr of el.attributes) {
+          const m = attr.name.match(/^data-umami-event-(.+)$/);
+          if (m) data[m[1]] = attr.value;
+        }
+        return data;
+      }
+      document.addEventListener("click", (e) => {
+        const target =
+          e.target instanceof Element
+            ? e.target.closest("[data-umami-event]")
+            : null;
+        if (!target) return;
+        const name = target.getAttribute("data-umami-event");
+        if (!name) return;
+        if (window.umami && typeof window.umami.track === "function") {
+          try {
+            window.umami.track(name, extractEventData(target));
+          } catch {}
+        }
+      });
+      function trackPageview() {
+        if (window.umami && typeof window.umami.track === "function") {
+          try {
+            window.umami.track();
+          } catch {}
+        }
+      }
+      document.addEventListener("astro:page-load", trackPageview);
+    })();
+  </script>
   <!-- Phosphor icons CDN -->
   <link
     rel="stylesheet"
     type="text/css"
     href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
+  />
+
+  <!-- Fonts: self-hosted Inter / Rajdhani / Press Start 2P -->
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    crossorigin
+    href="/fonts/Inter/Inter-400-latin.woff2"
+  />
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    crossorigin
+    href="/fonts/Rajdhani/Rajdhani-700-latin.woff2"
+  />
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    crossorigin
+    href="/fonts/PressStart2P/PressStart2P-400-latin.woff2"
   />
 
   {
@@ -58,7 +154,7 @@ if (ticketsUrl) {
           type="text/javascript"
           src={pretixJsHref}
           async
-          crossorigin
+          crossorigin="anonymous"
         />
         <style>
           {`@media (max-width: 480px) {
@@ -75,65 +171,313 @@ if (ticketsUrl) {
 
   <!-- Global Metadata -->
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="icon" type="image/svg+xml" href={image} />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="theme-color" content="#000046" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="mask-icon" href="/favicon.svg" color="#000046" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+
   <link
     rel="alternate"
     type="application/rss+xml"
     title="RSS"
     href="/rss.xml"
   />
-  <meta name="generator" content={Astro.generator} />
 
   <!-- Canonical URL -->
-  <!-- <link rel="canonical" href={canonicalURL} /> -->
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Robots -->
+  {
+    noIndex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow, max-image-preview:large" />
+    )
+  }
 
   <!-- Primary Meta Tags -->
   <title>{title}</title>
   <meta name="title" content={title} />
   <meta name="description" content={description} />
+  <meta
+    name="keywords"
+    content="BiznagaFest, BiznagaFest 2026, GDG Málaga, Google Developers, tech festival, conferencia tecnología, Málaga, Costa del Sol, DevFest, IT, desarrollo, software, IA, devops, frontend, backend"
+  />
+  <meta name="author" content="GDG Málaga" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content={Astro.url} />
+  <meta property="og:site_name" content={siteName} />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={new URL(image, Astro.url)} />
+  <meta property="og:image" content={imageURL} />
+  <meta property="og:image:secure_url" content={imageURL} />
+  <meta property="og:image:type" content="image/webp" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="628" />
+  <meta property="og:image:alt" content={`${siteName} — Are you ready?`} />
 
   <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content={Astro.url} />
-  <meta property="twitter:title" content={title} />
-  <meta property="twitter:description" content={description} />
-  <meta property="twitter:image" content={new URL(image, Astro.url)} />
-  <style is:global>
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={canonicalURL} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={imageURL} />
+  <meta name="twitter:image:alt" content={`${siteName} — Are you ready?`} />
 
+  {
+    jsonLd && (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLd)}
+      />
+    )
+  }
+  <style is:global>
+    @reference "../styles/global.css";
+
+    /* Inter */
     @font-face {
-      font-family: "Manrope";
-      src: url("/fonts/Manrope/Manrope-VariableFont_wght.ttf")
-        format("truetype");
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-400-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-400-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-500-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-500-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-600-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-600-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-700-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url("/fonts/Inter/Inter-700-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+
+    /* Rajdhani */
+    @font-face {
+      font-family: "Rajdhani";
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url("/fonts/Rajdhani/Rajdhani-500-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Rajdhani";
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url("/fonts/Rajdhani/Rajdhani-500-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Rajdhani";
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("/fonts/Rajdhani/Rajdhani-600-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Rajdhani";
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url("/fonts/Rajdhani/Rajdhani-600-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Rajdhani";
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url("/fonts/Rajdhani/Rajdhani-700-latin.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Rajdhani";
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url("/fonts/Rajdhani/Rajdhani-700-latin-ext.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+
+    /* Press Start 2P */
+    @font-face {
+      font-family: "Press Start 2P";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/PressStart2P/PressStart2P-400-latin.woff2")
+        format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "Press Start 2P";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/PressStart2P/PressStart2P-400-latin-ext.woff2")
+        format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+        U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+        U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+        U+A720-A7FF;
+    }
+
+    :root {
+      color-scheme: dark;
+    }
+
+    html,
+    body {
+      background-color: #000046;
+      color: #e4e3ff;
     }
 
     * {
       box-sizing: border-box;
-      font-family: "Manrope";
+    }
+
+    html,
+    body {
+      font-family: "Inter", sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Rajdhani", sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .font-display,
+    .font-display * {
+      font-family: "Press Start 2P", monospace;
     }
 
     .wrapper {
-      @apply mx-auto max-w-5xl pt-16 pb-28 md:pt-32 md:pb-52;
+      @apply mx-auto max-w-[1240px] px-6 py-16 md:py-24;
     }
 
     .wrapper-x {
-      @apply mx-auto max-w-5xl;
+      @apply mx-auto max-w-[1240px] px-6;
+    }
+
+    .pixel-shadow {
+      text-shadow:
+        2px 0 0 #03038a,
+        0 2px 0 #03038a,
+        2px 2px 0 #03038a;
     }
   </style>
 
   <script
+    is:inline
     defer
-    data-astro-rerun
     src="https://analytics.davidrojom.com/script.js"
-    data-website-id="ea9de801-ffe4-4882-ad09-b81bfc2ce561"></script>
+    data-website-id="ea9de801-ffe4-4882-ad09-b81bfc2ce561"
+    data-auto-track="false"></script>
 </head>

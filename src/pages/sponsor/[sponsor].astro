@@ -6,14 +6,6 @@ import Socials from "../../components/Socials.astro";
 import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
 
-export function getStaticPaths() {
-  return DATA.sponsors
-    .filter((sponsor) => sponsor.hasFeaturedPage)
-    .map((sponsor) => ({
-      params: { sponsor: sponsor.name },
-    }));
-}
-
 const { sponsor } = Astro.params;
 
 const sponsorData = DATA.sponsors.find((s) => s.name === sponsor);
@@ -28,44 +20,44 @@ if (!sponsorData || sponsorData.hasFeaturedPage === false) {
   description={sponsorData.description}
   lang="es"
 >
-  <main class="flex flex-col gap-6 min-h-screen wrapper">
-    <header>
-      <div class="p-4 mx-auto">
-        <Image
-          transition:name={sponsorData.name}
-          class="mx-auto w-full h-full object-contain max-h-[400px]"
-          src={sponsorData.picture}
-          alt={sponsorData.name}
-          height={400}
-          width={400}
-        />
-      </div>
+  <main class="flex flex-col gap-10 min-h-screen mx-auto max-w-[1240px] px-6 py-16 md:py-24">
+    <header
+      class="rounded-md border border-border bg-surface-card p-8 md:p-12"
+    >
+      <Image
+        transition:name={sponsorData.name}
+        class="mx-auto w-full h-full object-contain max-h-[300px]"
+        src={sponsorData.picture}
+        alt={sponsorData.name}
+        height={400}
+        width={400}
+      />
     </header>
     {
       !!sponsorData.description !== undefined && (
-        <div class="md:w-8/12 md:mx-auto flex flex-col gap-4 text-xl p-4 py-10">
+        <div class="md:w-10/12 md:mx-auto flex flex-col gap-4 font-sans text-base md:text-lg text-text-primary/90 leading-relaxed">
           <RichText text={sponsorData.description} />
         </div>
       )
     }
-    <div class="mx-auto mb-4">
+    <div class="mx-auto">
       <Socials
         socials={sponsorData.socials}
-        class="text-4xl text-green-600 dark:text-blue-600"
+        class="text-3xl text-text-primary hover:text-accent-yellow transition-colors"
       />
     </div>
     {
       !!sponsorData.jobOffers.length && (
-        <>
-          <h3 class="text-3xl font-bold mx-auto text-center">
-            Ofertas de Trabajo
+        <section class="flex flex-col gap-6">
+          <h3 class="font-heading text-3xl font-bold uppercase text-text-primary text-center">
+            Ofertas de trabajo
           </h3>
-          <section class="grid grid-cols-1 lg:grid-cols-2 py-2 px-6 pb-10 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {sponsorData.jobOffers.map((jobOffer) => (
               <JobOfferCard jobOffer={jobOffer} />
             ))}
-          </section>
-        </>
+          </div>
+        </section>
       )
     }
   </main>

@@ -1,5 +1,6 @@
 ---
 import Raffle from "../../components/Raffle.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
 import AnimatedOnViewportEnter from "../../components/utils/AnimatedOnViewportEnter.astro";
 import { DATA } from "../../data/data";
 import Layout from "../../layouts/Layout.astro";
@@ -17,26 +18,19 @@ if (!hasRaffles) {
   lang="es"
 >
   <main>
-    <section id="draws">
-      <div
-        class="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-30 text-dark-background dark:text-light-background"
-      >
-        <div class="wrapper pt-5 pb-5 md:pb-20 md:pt-20 gap-16 px-6">
-          <AnimatedOnViewportEnter
-            animation="animate__animated animate__fadeInLeft"
-          >
-            <h2 class="text-3xl font-bold text-center md:text-left">Sorteos</h2>
-          </AnimatedOnViewportEnter>
-        </div>
+    <section id="draws" class="bg-surface-page">
+      <div class="mx-auto max-w-310 px-6 py-16 md:py-24">
+        <AnimatedOnViewportEnter animation="animate-fade-in-left">
+          <SectionHeader eyebrow="Loot Drop" title="Sorteos" />
+        </AnimatedOnViewportEnter>
       </div>
 
-      <div class="py-20 flex flex-col gap-10">
+      <div class="flex flex-col">
         {
           DATA.raffles.map((raffle, key) => {
-            let isEven = key % 2 === 0;
-
+            const isEven = key % 2 === 0;
             return (
-              <AnimatedOnViewportEnter animation="animate__animated animate__fadeIn">
+              <AnimatedOnViewportEnter animation="animate-fade-in">
                 <Raffle raffle={raffle} isEven={isEven} />
               </AnimatedOnViewportEnter>
             );

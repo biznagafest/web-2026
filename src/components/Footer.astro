@@ -5,51 +5,72 @@ import { DATA } from "../data/data";
 import Socials from "./Socials.astro";
 ---
 
-<footer
-  class="bg-green-50 dark:bg-blue-900 dark:bg-opacity-30 text-dark-background dark:text-light-background p-10 text-center"
->
+<footer class="bg-surface-page border-t border-border">
   <div
-    class="mx-auto max-w-[2000px] flex flex-col-reverse lg:grid lg:grid-cols-[1fr_3fr_1fr] gap-10"
+    class="mx-auto max-w-[1240px] flex flex-col gap-10 px-6 py-12 md:py-16 md:grid md:grid-cols-[1fr_2fr_1fr]"
   >
-    <div class="flex flex-col items-center">
-      <div class="w-full max-w-[250px] md:max-w-[300px] mx-auto">
-        <a aria-label="Go to Home Page" href="/#top" data-umami-event="footer_logo_click" class="w-full h-full">
-          <Image
-            src="/logo.svg"
-            alt="Logo of Biznagafest"
-            width={250}
-            height={50}
-            class="brightness-100 dark:invert"
-          />
-        </a>
-      </div>
-      <span class="font-thin text-sm">&copy; {DATA.title}</span>
+    <div class="flex flex-col items-center md:items-start gap-4">
+      <a
+        aria-label="Go to Home Page"
+        href="/"
+        data-umami-event="footer_logo_click"
+        class="block"
+      >
+        <Image
+          src="/logo.svg"
+          alt="Logo of Biznagafest"
+          width={200}
+          height={40}
+          class="invert h-10 w-auto"
+        />
+      </a>
+      <span class="font-display text-[10px] uppercase tracking-pixel text-text-secondary">
+        &copy; {DATA.title}
+      </span>
       <Socials socials={DATA.socials} />
     </div>
-    <div class="flex flex-row gap-6 align-middle justify-center flex-wrap">
-      {
-        DATA.footerLinks.map((link) => (
-          <a
-            aria-label={`Go to ${link.title} Page`}
-            class="grid grid-cols-1 place-content-center font-semibold"
-            href={`${link.href}#top`}
-            data-umami-event="footer_link_click"
-          >
-            {link.title}
-          </a>
-        ))
-      }
-    </div>
+
+    <nav class="flex flex-col items-center md:items-start gap-3">
+      <span
+        class="font-display text-[10px] uppercase tracking-pixel text-text-secondary"
+      >
+        Navega
+      </span>
+      <ul
+        class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start gap-x-6 gap-y-2"
+      >
+        {
+          DATA.footerLinks.map((link) => (
+            <li>
+              <a
+                aria-label={`Go to ${link.title} Page`}
+                class="font-sans text-sm text-text-primary/85 hover:text-accent-yellow transition-colors"
+                href={link.href}
+                data-umami-event="footer_link_click"
+              >
+                {link.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
     {
       !!DATA.previousEditions.length && (
-        <div class="flex flex-col gap-6 w-fit mx-auto">
-          <h2 class="text-center lg:text-left font-semibold text-lg">
-            Previous Editions
-          </h2>
-          <ul class="flex flex-row flex-wrap gap-3 align-middle justify-center md:justify-start">
+        <div class="flex flex-col items-center md:items-start gap-3">
+          <span class="font-display text-[10px] uppercase tracking-pixel text-text-secondary">
+            Ediciones anteriores
+          </span>
+          <ul class="flex flex-row flex-wrap gap-x-3 gap-y-2 justify-center md:justify-start">
             {DATA.previousEditions.map((prevEd) => (
               <li>
-                <a aria-label={`Go to ${prevEd.name} Page`} href={prevEd.url} data-umami-event="footer_previous_edition_click">
+                <a
+                  aria-label={`Go to ${prevEd.name} Page`}
+                  href={prevEd.url}
+                  data-umami-event="footer_previous_edition_click"
+                  class="inline-flex items-center justify-center rounded-sm border border-border px-2.5 py-1 font-display text-[10px] text-text-primary/80 hover:border-accent-yellow hover:text-accent-yellow transition-colors"
+                >
                   {prevEd.name}
                 </a>
               </li>
