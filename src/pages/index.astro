@@ -181,7 +181,7 @@ const jsonLd = {
       <p
         class="font-display text-xs md:text-sm text-accent-yellow animate-pulse"
       >
-        ▸ Are you ready?
+        Are you ready?
       </p>
       <div class="flex flex-col sm:flex-row gap-3 mt-2">
         <PretixBuyButton
@@ -435,6 +435,109 @@ const jsonLd = {
     )
   }
 
+  <!-- Transparency / Where the money goes -->
+  <section
+    id="transparency"
+    class="relative bg-surface-page border-t border-border/40 overflow-hidden"
+  >
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_15%_20%,rgba(89,159,255,0.12),transparent_55%),radial-gradient(circle_at_85%_90%,rgba(234,234,0,0.08),transparent_60%)]"
+    >
+    </div>
+
+    <div
+      class="relative mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10"
+    >
+      <AnimatedOnViewportEnter
+        animation="animate__animated animate__fadeInLeft"
+      >
+        <SectionHeader
+          eyebrow="Transparencia"
+          title="¿En qué se invierte cada euro?"
+        />
+      </AnimatedOnViewportEnter>
+
+      <AnimatedOnViewportEnter animation="animate__animated animate__fadeInUp">
+        <p
+          class="max-w-3xl font-sans text-base md:text-lg text-text-primary/85 leading-relaxed"
+        >
+          <strong class="text-accent-yellow"
+            >BiznagaFest es un evento sin ánimo de lucro organizado íntegramente
+            por voluntarios</strong
+          >. Los acuerdos de patrocinio y la venta de entradas son los recursos
+          que hacen posible cada edición y se destinan por completo a la
+          celebración del festival.
+        </p>
+      </AnimatedOnViewportEnter>
+
+      <AnimatedOnViewportEnter animation="animate__animated animate__fadeInUp">
+        <ul
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
+        >
+          {
+            [
+              {
+                icon: "ph-airplane-tilt",
+                label:
+                  "Vuelos, hospedaje y dietas para quienes vienen a dar charlas",
+              },
+              {
+                icon: "ph-monitor-play",
+                label:
+                  "Equipos de proyección y sonido profesional en cada sala",
+              },
+              {
+                icon: "ph-video-camera",
+                label: "Cobertura audiovisual: equipo de fotografía y vídeo",
+              },
+              {
+                icon: "ph-fork-knife",
+                label:
+                  "Manutención del equipo: speakers, sponsors, organización, voluntariado y staff externo",
+              },
+              {
+                icon: "ph-gift",
+                label: "Welcome pack y obsequios para todos los asistentes",
+              },
+              {
+                icon: "ph-paint-brush",
+                label: "Diseño e impresión de cartelería y material gráfico",
+              },
+              {
+                icon: "ph-clipboard-text",
+                label:
+                  "Logística operativa: alquiler de mobiliario, accesos y aparcamiento",
+              },
+              {
+                icon: "ph-hand-coins",
+                label:
+                  "Donamos a causas solidarias lo recaudado por la comida de los asistentes",
+              },
+              {
+                icon: "ph-receipt",
+                label:
+                  "Pago del canon correspondiente por cada comensal del evento",
+              },
+            ].map((item) => (
+              <li class="group relative flex items-start gap-4 rounded-md border border-border bg-surface-card p-5 md:p-6 transition-all duration-300 hover:border-border-highlight hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.45)]">
+                <span
+                  aria-hidden="true"
+                  class="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-md border border-border-highlight/50 bg-action-secondary/15 text-2xl text-accent-blue transition-colors duration-300 group-hover:text-accent-yellow group-hover:border-accent-yellow/60"
+                >
+                  <i class={`ph ${item.icon}`} />
+                </span>
+                <span class="font-sans text-sm md:text-base text-text-primary/85 leading-relaxed">
+                  {item.label}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </AnimatedOnViewportEnter>
+    </div>
+  </section>
+
   <!-- Sponsors CTA -->
   {
     DATA.sponsorsDossier.enabled && (
@@ -604,7 +707,7 @@ const jsonLd = {
         <div class="relative mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
           <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
             <SectionHeader
-              eyebrow="★ Hall of Fame"
+              eyebrow="Hall of Fame"
               title="Han pasado por aquí"
               align="center"
             />
@@ -657,7 +760,7 @@ const jsonLd = {
           target="_blank"
           data-umami-event="call_for_papers_click"
         >
-          ▸ {DATA.callForPapers.title}
+          {DATA.callForPapers.title}
         </a>
       </section>
     )
