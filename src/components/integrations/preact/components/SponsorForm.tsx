@@ -78,9 +78,7 @@ export default function SponsorForm({ className }: { className?: string }) {
           name="message"
           required
           value={state.message}
-          onChange={(e) =>
-            updateFormProperty("message", e.currentTarget.value)
-          }
+          onChange={(e) => updateFormProperty("message", e.currentTarget.value)}
         />
       </div>
       <button

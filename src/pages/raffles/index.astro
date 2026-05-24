@@ -19,10 +19,8 @@ if (!hasRaffles) {
 >
   <main>
     <section id="draws" class="bg-surface-page">
-      <div class="mx-auto max-w-[1240px] px-6 py-16 md:py-24">
-        <AnimatedOnViewportEnter
-          animation="animate__animated animate__fadeInLeft"
-        >
+      <div class="mx-auto max-w-310 px-6 py-16 md:py-24">
+        <AnimatedOnViewportEnter animation="animate-fade-in-left">
           <SectionHeader eyebrow="Loot Drop" title="Sorteos" />
         </AnimatedOnViewportEnter>
       </div>
@@ -32,7 +30,7 @@ if (!hasRaffles) {
           DATA.raffles.map((raffle, key) => {
             const isEven = key % 2 === 0;
             return (
-              <AnimatedOnViewportEnter animation="animate__animated animate__fadeIn">
+              <AnimatedOnViewportEnter animation="animate-fade-in">
                 <Raffle raffle={raffle} isEven={isEven} />
               </AnimatedOnViewportEnter>
             );

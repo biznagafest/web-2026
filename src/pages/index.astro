@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import { DATA } from "../data/data";
 import biznagaWordmark from "../assets/biznagafest-wordmark.svg";
+import heroBackground from "../assets/hero-background.webp";
 import Speaker from "../components/Speaker.astro";
 import Sponsor from "../components/Sponsor.astro";
 import AnimatedOnViewportEnter from "../components/utils/AnimatedOnViewportEnter.astro";
@@ -20,6 +21,7 @@ import SectionHeader from "../components/SectionHeader.astro";
 import StatCard from "../components/StatCard.astro";
 import SponsorsCta from "../components/SponsorsCta.astro";
 import SponsorForm from "../components/integrations/preact/components/SponsorForm";
+import { buildEventJsonLd } from "../utils/json-ld";
 
 const heroDateFormatter = new Intl.DateTimeFormat("es-ES", {
   day: "2-digit",
@@ -82,58 +84,7 @@ const heroStats = [
   { value: "+120", label: "Horas de contenido tech" },
 ];
 
-const eventStartIso = DATA.date instanceof Date ? DATA.date.toISOString() : "";
-const eventEndDate =
-  DATA.date instanceof Date
-    ? new Date(DATA.date.getTime() + 12 * 60 * 60 * 1000).toISOString()
-    : "";
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Event",
-  name: DATA.title,
-  description: DATA.description,
-  startDate: eventStartIso,
-  endDate: eventEndDate,
-  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  eventStatus: "https://schema.org/EventScheduled",
-  image: [
-    new URL(
-      "/BIZNAGAFEST-2026-OPENGRAPH.webp",
-      Astro.site ?? Astro.url,
-    ).toString(),
-  ],
-  location: {
-    "@type": "Place",
-    name: DATA.venue?.title,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: DATA.venue?.address,
-      addressLocality: DATA.venue?.city,
-      addressCountry: "ES",
-    },
-  },
-  organizer: {
-    "@type": "Organization",
-    name: "GDG Málaga",
-    url: "https://gdg.community.dev/gdg-malaga/",
-  },
-  ...(DATA.ticketsUrl
-    ? {
-        offers: {
-          "@type": "Offer",
-          url: DATA.ticketsUrl,
-          availability: "https://schema.org/InStock",
-          priceCurrency: "EUR",
-          validFrom: new Date().toISOString(),
-        },
-      }
-    : {}),
-  performer: DATA.speakers?.map((s) => ({
-    "@type": "Person",
-    name: s.name,
-  })),
-};
+const jsonLd = buildEventJsonLd(DATA, Astro.site ?? Astro.url);
 ---
 
 <Layout
@@ -149,11 +100,13 @@ const jsonLd = {
         class="absolute inset-0 bg-gradient-to-b from-surface-page via-[#00002d] to-surface-card"
       >
       </div>
-      <img
-        src="/hero-background.webp"
+      <Image
+        src={heroBackground}
         alt=""
         class="absolute inset-0 h-full w-full object-cover opacity-20"
+        layout="full-width"
         loading="eager"
+        fetchpriority="high"
       />
     </div>
     <div
@@ -169,6 +122,7 @@ const jsonLd = {
           src={biznagaWordmark}
           alt="BiznagaFest 2026"
           class="w-full h-auto"
+          layout="full-width"
           loading="eager"
         />
       </h1>
@@ -207,9 +161,7 @@ const jsonLd = {
     <div
       class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start"
     >
-      <AnimatedOnViewportEnter
-        animation="animate__animated animate__fadeInLeft"
-      >
+      <AnimatedOnViewportEnter animation="animate-fade-in-left">
         <div class="flex flex-col gap-6">
           <SectionHeader
             eyebrow="El evento"
@@ -222,7 +174,7 @@ const jsonLd = {
           </div>
         </div>
       </AnimatedOnViewportEnter>
-      <AnimatedOnViewportEnter animation="animate__animated animate__fadeInUp">
+      <AnimatedOnViewportEnter animation="animate-fade-in-up">
         <div class="grid grid-cols-2 gap-4">
           {
             heroStats.map((stat) => (
@@ -239,7 +191,7 @@ const jsonLd = {
     !!DATA.speakers.length && (
       <section id="speakers" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Fighters"
               title="Speakers"
@@ -256,12 +208,84 @@ const jsonLd = {
     )
   }
 
+  <!-- Call for Papers -->
+  {
+    DATA.callForPapers.isEnabled && (
+      <section
+        id="cfp"
+        class="relative overflow-hidden border-y border-accent-yellow/40 bg-surface-page"
+      >
+        <div
+          aria-hidden="true"
+          class="absolute inset-0 pointer-events-none opacity-70 bg-[radial-gradient(circle_at_20%_30%,rgba(234,234,0,0.22),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(222,18,35,0.22),transparent_55%)]"
+        />
+        <div
+          aria-hidden="true"
+          class="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-accent-yellow via-accent-red to-action-secondary"
+        />
+        <div
+          aria-hidden="true"
+          class="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-action-secondary via-accent-red to-accent-yellow"
+        />
+
+        <div class="relative mx-auto max-w-310 px-6 py-20 md:py-28 flex flex-col items-center gap-8 text-center">
+          <AnimatedOnViewportEnter animation="animate-fade-in">
+            <span class="inline-flex items-center gap-2 rounded-sm border border-accent-yellow/60 bg-accent-yellow/10 px-3 py-1.5 font-display text-[10px] uppercase tracking-pixel text-accent-yellow animate-pulse">
+              <i class="ph ph-microphone-stage" aria-hidden="true" />
+              Player 1 Wanted · CFP Abierto
+            </span>
+          </AnimatedOnViewportEnter>
+
+          <AnimatedOnViewportEnter animation="animate-fade-in-up">
+            <h2 class="font-heading text-4xl md:text-6xl lg:text-7xl font-bold uppercase tracking-wide text-text-primary leading-[0.95] pixel-shadow">
+              <span class="block">¿Tienes algo que</span>
+              <span class="block text-accent-yellow">contar?</span>
+            </h2>
+          </AnimatedOnViewportEnter>
+
+          <AnimatedOnViewportEnter animation="animate-fade-in-up">
+            <p class="max-w-2xl font-sans text-base md:text-lg text-text-primary/85 leading-relaxed">
+              El Call for Papers está
+              <strong class="text-accent-yellow">ABIERTO</strong>. Presenta tu
+              charla o workshop y sube al escenario más grande del sur.
+            </p>
+          </AnimatedOnViewportEnter>
+
+          <AnimatedOnViewportEnter animation="animate-fade-in-up">
+            <a
+              aria-label="Call for Papers Link"
+              class="group relative inline-flex items-center gap-3 rounded-sm bg-accent-yellow px-8 py-4 md:px-10 md:py-5 font-display text-sm md:text-base uppercase tracking-pixel text-text-inverse shadow-[0_0_0_3px_var(--color-action-secondary),0_0_24px_rgba(234,234,0,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_0_3px_var(--color-action-secondary),0_10px_36px_rgba(234,234,0,0.55)]"
+              href={DATA.callForPapers.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-umami-event="call_for_papers_click"
+            >
+              {DATA.callForPapers.title}
+              <i
+                class="ph ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+          </AnimatedOnViewportEnter>
+
+          <div class="inline-flex items-center gap-2 mt-2 font-display text-[10px] uppercase tracking-pixel text-text-secondary">
+            <span
+              aria-hidden="true"
+              class="inline-block h-2 w-2 rounded-full bg-accent-red animate-pulse"
+            />
+            Plazas limitadas · Selección por comité
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   <!-- Hosts -->
   {
     !!DATA.hosts.length && (
       <section id="hosts" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="The Ringmasters"
               title="Hosts & MCs"
@@ -284,7 +308,7 @@ const jsonLd = {
     !!DATA.schedule.length && (
       <section id="schedule" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Battle Plan"
               title="Agenda"
@@ -302,14 +326,14 @@ const jsonLd = {
     !!DATA.tickets.length && (
       <section id="tickets" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Insert Coin"
               title="Elige tu entrada"
               align="center"
             />
           </AnimatedOnViewportEnter>
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeIn">
+          <AnimatedOnViewportEnter animation="animate-fade-in">
             <div class="flex flex-col gap-6">
               <TicketSection tickets={DATA.tickets} />
             </div>
@@ -401,7 +425,7 @@ const jsonLd = {
     !!DATA.sponsors.length && (
       <section id="sponsors" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Power-ups"
               title="Sponsors"
@@ -449,16 +473,14 @@ const jsonLd = {
     <div
       class="relative mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10"
     >
-      <AnimatedOnViewportEnter
-        animation="animate__animated animate__fadeInLeft"
-      >
+      <AnimatedOnViewportEnter animation="animate-fade-in-left">
         <SectionHeader
           eyebrow="Transparencia"
           title="¿En qué se invierte cada euro?"
         />
       </AnimatedOnViewportEnter>
 
-      <AnimatedOnViewportEnter animation="animate__animated animate__fadeInUp">
+      <AnimatedOnViewportEnter animation="animate-fade-in-up">
         <p
           class="max-w-3xl font-sans text-base md:text-lg text-text-primary/85 leading-relaxed"
         >
@@ -471,7 +493,7 @@ const jsonLd = {
         </p>
       </AnimatedOnViewportEnter>
 
-      <AnimatedOnViewportEnter animation="animate__animated animate__fadeInUp">
+      <AnimatedOnViewportEnter animation="animate-fade-in-up">
         <ul
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
         >
@@ -578,9 +600,7 @@ const jsonLd = {
     <div
       class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10"
     >
-      <AnimatedOnViewportEnter
-        animation="animate__animated animate__fadeInLeft"
-      >
+      <AnimatedOnViewportEnter animation="animate-fade-in-left">
         <SectionHeader
           eyebrow="The Arena"
           title="Donde sucede todo"
@@ -666,7 +686,7 @@ const jsonLd = {
       !!DATA.lastEdition?.gallery?.length) && (
       <section id="last" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Last Round"
               title="Última edición"
@@ -705,7 +725,7 @@ const jsonLd = {
         />
 
         <div class="relative mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-12">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Hall of Fame"
               title="Han pasado por aquí"
@@ -746,32 +766,12 @@ const jsonLd = {
     )
   }
 
-  <!-- Call for Papers -->
-  {
-    DATA.callForPapers.isEnabled && (
-      <section
-        id="cfp"
-        class="bg-surface-page border-t border-border/40 py-12 md:py-16 grid place-items-center"
-      >
-        <a
-          aria-label="Call for Papers Link"
-          class="inline-flex items-center gap-2 rounded-sm bg-action-secondary px-6 py-3 font-display text-xs uppercase tracking-pixel text-white transition-colors hover:bg-action-secondary-hover animate-pulse"
-          href={DATA.callForPapers.url}
-          target="_blank"
-          data-umami-event="call_for_papers_click"
-        >
-          {DATA.callForPapers.title}
-        </a>
-      </section>
-    )
-  }
-
   <!-- FAQ -->
   {
     !!DATA.faq.length && (
       <section id="faq" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Pause Menu"
               title="Preguntas frecuentes"
@@ -789,7 +789,7 @@ const jsonLd = {
     !!DATA.team.organizers.length && (
       <section id="team" class="bg-surface-page border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Crew"
               title="Equipo"
@@ -811,7 +811,7 @@ const jsonLd = {
     !!DATA.team.staff.length && (
       <section id="staff" class="bg-surface-card border-t border-border/40">
         <div class="mx-auto max-w-[1240px] px-6 py-20 md:py-24 flex flex-col gap-10">
-          <AnimatedOnViewportEnter animation="animate__animated animate__fadeInLeft">
+          <AnimatedOnViewportEnter animation="animate-fade-in-left">
             <SectionHeader
               eyebrow="Squad"
               title="Voluntarios"

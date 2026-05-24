@@ -1,4 +1,4 @@
-import { CMS_URL } from "astro:env/client";
+import { CMS_URL } from "astro:env/server";
 import type { Nullable } from "../utils/nullable";
 import type { Data, SponsorTier } from "./data.type";
 import axios from "axios";

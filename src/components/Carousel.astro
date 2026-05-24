@@ -4,7 +4,7 @@ import "swiper/css/bundle";
 
 interface Props {
   images: ReadonlyArray<string>;
-  videoUrl?: string;
+  videoUrl?: string | null;
   class?: string;
   navigation?: boolean;
   pagination?: boolean;
@@ -45,6 +45,7 @@ const {
             alt="Event picture"
             width="800"
             height="550"
+            layout="full-width"
           />
         </div>
       ))

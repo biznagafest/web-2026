@@ -15,7 +15,7 @@ if (!speakerData) {
 }
 
 const events = DATA.events.filter((event) =>
-  event.speakers.includes(speakerData.name as any),
+  event.speakers.includes(speakerData.name),
 );
 ---
 

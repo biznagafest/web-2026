@@ -110,12 +110,6 @@ if (ticketsUrl) {
       document.addEventListener("astro:page-load", trackPageview);
     })();
   </script>
-  <!-- Animate.css CDN -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
-
   <!-- Phosphor icons CDN -->
   <link
     rel="stylesheet"
@@ -251,9 +245,7 @@ if (ticketsUrl) {
     )
   }
   <style is:global>
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
+    @reference "../styles/global.css";
 
     /* Inter */
     @font-face {

@@ -1,9 +1,22 @@
-import { USE_CMS } from "astro:env/client";
+import { USE_CMS } from "astro:env/server";
 import { getDataFromCms } from "./cms-data";
 import { LOCALDATA } from "./local-data";
-import type { Data } from "./data.type";
+import { DataSchema, type Data } from "./data.schema";
 
-export const DATA: Data = USE_CMS ? await getDataFromCms() : LOCALDATA;
+function validate(input: unknown, source: "local" | "cms"): Data {
+  const result = DataSchema.safeParse(input);
+  if (!result.success) {
+    const issues = result.error.issues
+      .map((i) => `${i.path.join(".") || "<root>"}: ${i.message}`)
+      .join("; ");
+    throw new Error(`[data] ${source} data failed validation: ${issues}`);
+  }
+  return result.data;
+}
+
+export const DATA: Data = USE_CMS
+  ? validate(await getDataFromCms(), "cms")
+  : validate(LOCALDATA, "local");
 
 const REVALIDATE_MS = 60_000;
 let lastRevalidatedAt = Date.now();
@@ -15,7 +28,7 @@ export async function ensureFreshData(): Promise<void> {
   if (inFlight) return inFlight;
   inFlight = (async () => {
     try {
-      const fresh = await getDataFromCms();
+      const fresh = validate(await getDataFromCms(), "cms");
       for (const key of Object.keys(DATA) as (keyof Data)[]) {
         delete (DATA as Record<string, unknown>)[key];
       }
@@ -25,7 +38,10 @@ export async function ensureFreshData(): Promise<void> {
       // Keep serving the existing DATA snapshot — better stale than 500.
       // Back off briefly so a flapping CMS does not hammer every request.
       lastRevalidatedAt = Date.now() - REVALIDATE_MS + 10_000;
-      console.error("[data] CMS revalidation failed, serving stale data:", error);
+      console.error(
+        "[data] CMS revalidation failed, serving stale data:",
+        error,
+      );
     } finally {
       inFlight = null;
     }

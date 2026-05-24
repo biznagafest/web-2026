@@ -1,9 +1,11 @@
 ---
+import "../styles/global.css";
 import Footer from "../components/Footer.astro";
 import Navigation from "../components/Navigation.astro";
 import { DATA } from "../data/data";
 import CommonHead from "../components/CommonHead.astro";
 import ButtonUp from "../components/ButtonUp.astro";
+import AnimateObserver from "../components/utils/AnimateObserver.astro";
 import type { Nullish } from "../utils/nullish";
 
 export interface Props {
@@ -18,7 +20,7 @@ export interface Props {
 const {
   title,
   lang,
-  description = "",
+  description,
   image,
   noIndex,
   jsonLd,
@@ -29,7 +31,7 @@ const {
 <html lang={lang} class="dark">
   <CommonHead
     title={title}
-    description={description}
+    description={description ?? ""}
     image={image}
     noIndex={noIndex}
     jsonLd={jsonLd}
@@ -44,47 +46,6 @@ const {
       <Footer />
     </div>
     {DATA.welcomeBanner.isEnabled && <div class="hidden" aria-hidden="true" />}
-    <script is:inline data-astro-rerun>
-      (() => {
-        const animations = [...document.querySelectorAll(".animate")];
-
-        const observer = new IntersectionObserver(
-          (entries, observer) => {
-            entries.forEach((entry) => {
-              const animationClasses = (
-                entry.target.getAttribute("data-animation") ?? ""
-              ).split(" ");
-
-              if (entry.isIntersecting) {
-                if (
-                  !entry.target.getAttribute("data-animation-repeat") &&
-                  entry.target.getAttribute("data-animation-repeated")
-                ) {
-                  observer.unobserve(entry.target);
-                  return;
-                }
-                entry.target.setAttribute("data-animation-repeated", "true");
-                animationClasses.forEach((className) => {
-                  entry.target.classList.add(className);
-                });
-                if (entry.target.classList.contains("invisible")) {
-                  entry.target.classList.remove("invisible");
-                }
-              } else if (
-                !entry.isIntersecting &&
-                entry.boundingClientRect.top > 0
-              ) {
-                animationClasses.forEach((className) => {
-                  entry.target.classList.remove(className);
-                });
-              }
-            });
-          },
-          { rootMargin: "200px 0px" },
-        );
-
-        animations.forEach((animation) => observer.observe(animation));
-      })();
-    </script>
+    <AnimateObserver />
   </body>
 </html>
