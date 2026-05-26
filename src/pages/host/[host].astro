@@ -27,11 +27,18 @@ const jsonLd = [
     { name: hostData.name, url: pageUrl },
   ]),
 ];
+
+const seoTitle = hostData.position
+  ? `${hostData.name} — ${hostData.position} · Host en ${data.title}`
+  : `${hostData.name} · Host en ${data.title}`;
+const seoDescription = hostData.description
+  ? hostData.description
+  : `${hostData.name} forma parte del equipo de hosts y MCs de ${data.title}, el festival tech de la Costa del Sol.`;
 ---
 
 <Layout
-  title={`${hostData.name} | ${data.title}`}
-  description={hostData.description}
+  title={seoTitle}
+  description={seoDescription}
   image={hostData.picture}
   ogType="profile"
   jsonLd={jsonLd}
@@ -47,7 +54,7 @@ const jsonLd = [
             transition:name={`picture-host-${slug}`}
             class="w-full max-w-[320px] mx-auto rounded-md border-2 border-border-highlight aspect-square object-cover"
             src={hostData.picture}
-            alt={`Picture of ${hostData.name}`}
+            alt={`Foto de ${hostData.name}${hostData.position ? `, ${hostData.position}` : ""}, host en ${data.title}`}
             height={320}
             width={320}
           />

@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import PretixBuyButton from "./PretixBuyButton.astro";
+import { slugify } from "../utils/slug";
 
 const { data } = Astro.locals;
 
@@ -152,7 +153,7 @@ const featuredSponsors = data.sponsors.filter(
             <li>
               <a
                 aria-label={`Conoce a ${sponsor.name}`}
-                href={`/sponsor/${encodeURIComponent(sponsor.name)}`}
+                href={`/sponsor/${slugify(sponsor.name)}`}
                 data-umami-event="nav_sponsor_click"
                 class="block px-3 py-2 rounded-sm text-text-secondary hover:text-accent-yellow transition-colors"
               >

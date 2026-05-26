@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import type { Sponsor, SponsorTier } from "../data/data.type";
+import { slugify } from "../utils/slug";
 
 interface Props {
   sponsor: Sponsor;
@@ -25,7 +26,7 @@ const cardHeight = tierHeights[sponsor.tier];
 
 <a
   aria-label={`Visita la web de ${sponsor.name}`}
-  href={sponsor.hasFeaturedPage ? `/sponsor/${encodeURIComponent(sponsor.name)}` : sponsor.url}
+  href={sponsor.hasFeaturedPage ? `/sponsor/${slugify(sponsor.name)}` : sponsor.url}
   data-umami-event="sponsor_link_click"
   target={sponsor.hasFeaturedPage ? undefined : "_blank"}
   rel={sponsor.hasFeaturedPage ? undefined : "noopener noreferrer"}
@@ -36,7 +37,7 @@ const cardHeight = tierHeights[sponsor.tier];
   >
     <Image
       src={sponsor.picture}
-      alt={`Logo of ${sponsor.name}`}
+      alt={`Logo de ${sponsor.name}`}
       inferSize
       class:list={[
         "w-auto max-w-full object-contain opacity-90 transition-opacity duration-300 group-hover:opacity-100",

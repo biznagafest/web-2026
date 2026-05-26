@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import { Font } from "astro:assets";
+import { stripMarkdown, truncate } from "../utils/strip-markdown";
 
 const { data } = Astro.locals;
 
@@ -27,6 +28,7 @@ const TWITTER_HANDLE = "@BiznagaFest";
 const siteName = data.title;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 const imageURL = new URL(image, Astro.site ?? Astro.url).toString();
+const cleanDescription = truncate(stripMarkdown(description ?? ""), 200);
 
 const ticketsUrl = data.ticketsUrl?.trim();
 let pretixOrigin: string | null = null;
@@ -186,7 +188,7 @@ if (ticketsUrl) {
 
   <!-- Primary Meta Tags -->
   <title>{title}</title>
-  <meta name="description" content={description} />
+  <meta name="description" content={cleanDescription} />
   <meta name="author" content="GDG Málaga" />
 
   <!-- Open Graph / Facebook -->
@@ -195,7 +197,7 @@ if (ticketsUrl) {
   <meta property="og:locale" content="es_ES" />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
+  <meta property="og:description" content={cleanDescription} />
   <meta property="og:image" content={imageURL} />
   <meta property="og:image:secure_url" content={imageURL} />
   <meta property="og:image:type" content="image/webp" />
@@ -209,7 +211,7 @@ if (ticketsUrl) {
   <meta name="twitter:creator" content={TWITTER_HANDLE} />
   <meta name="twitter:url" content={canonicalURL} />
   <meta name="twitter:title" content={title} />
-  <meta name="twitter:description" content={description} />
+  <meta name="twitter:description" content={cleanDescription} />
   <meta name="twitter:image" content={imageURL} />
   <meta name="twitter:image:alt" content={`${siteName} — Are you ready?`} />
 

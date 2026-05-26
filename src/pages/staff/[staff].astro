@@ -27,11 +27,18 @@ const jsonLd = [
     { name: staffData.name, url: pageUrl },
   ]),
 ];
+
+const seoTitle = staffData.position
+  ? `${staffData.name} — ${staffData.position} · Voluntariado ${data.title}`
+  : `${staffData.name} · Voluntariado ${data.title}`;
+const seoDescription = staffData.description
+  ? staffData.description
+  : `${staffData.name} forma parte del equipo de voluntarios de ${data.title}, el festival tech de la Costa del Sol.`;
 ---
 
 <Layout
-  title={`${staffData.name} | ${data.title}`}
-  description={staffData.description}
+  title={seoTitle}
+  description={seoDescription}
   image={staffData.picture}
   ogType="profile"
   jsonLd={jsonLd}
@@ -48,7 +55,7 @@ const jsonLd = [
               transition:name={`picture-staff-${slug}`}
               class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
               src={staffData.picture}
-              alt={`Picture of ${staffData.name}`}
+              alt={`Foto de ${staffData.name}, voluntario en ${data.title}`}
               loading="eager"
               height={320}
               width={320}

@@ -20,7 +20,11 @@ import SectionHeader from "../components/SectionHeader.astro";
 import StatCard from "../components/StatCard.astro";
 import SponsorsCta from "../components/SponsorsCta.astro";
 import SponsorForm from "../components/integrations/preact/components/SponsorForm";
-import { buildEventJsonLd, buildFaqJsonLd } from "../utils/json-ld";
+import {
+  buildEventJsonLd,
+  buildFaqJsonLd,
+  buildWebSiteJsonLd,
+} from "../utils/json-ld";
 
 const { data } = Astro.locals;
 
@@ -86,15 +90,23 @@ const heroStats = [
 ];
 
 const baseUrl = Astro.site ?? Astro.url;
-const jsonLd: Array<Record<string, unknown>> = [buildEventJsonLd(data, baseUrl)];
+const jsonLd: Array<Record<string, unknown>> = [
+  buildWebSiteJsonLd(data, baseUrl),
+  buildEventJsonLd(data, baseUrl),
+];
 if (data.faq?.length) {
   jsonLd.push(buildFaqJsonLd(data.faq));
 }
+
+const eventYear = data.date instanceof Date ? data.date.getFullYear() : 2026;
+const eventCity = data.venue?.city ?? "Málaga";
+const seoTitle = `${data.title} — Festival Tech en ${eventCity} · ${heroDateLabel.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}`;
+const seoDescription = `Conferencia tech de la Costa del Sol el ${heroDateLabel.toLowerCase()} en ${data.venue?.title ?? eventCity}. Charlas y workshops sobre DevOps, Backend, Frontend, IA, Chatbots y Blockchain. Speakers de Google, Red Hat, Docker y más. ¡Consigue tu entrada!`;
 ---
 
 <Layout
-  title={data.title}
-  description={data.description}
+  title={seoTitle}
+  description={seoDescription}
   lang="es"
   jsonLd={jsonLd}
 >
@@ -125,10 +137,13 @@ if (data.faq?.length) {
       </span>
       <h1 class="w-full max-w-[1140px]">
         <BiznagaWordmark
-          aria-label="BiznagaFest 2026"
+          aria-hidden="true"
           role="img"
           class="w-full h-auto"
         />
+        <span class="sr-only">
+          {data.title} — Festival Tech de la Costa del Sol en {eventCity}, {eventYear}
+        </span>
       </h1>
       <div
         class="font-display text-base md:text-xl text-text-primary flex flex-col gap-2"

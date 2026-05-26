@@ -4,6 +4,7 @@ import JobOfferCard from "../../components/JobOfferCard.astro";
 import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
 import Layout from "../../layouts/Layout.astro";
+import { slugify } from "../../utils/slug";
 import {
   buildBreadcrumbJsonLd,
   buildOrganizationJsonLd,
@@ -12,7 +13,7 @@ import {
 const { data } = Astro.locals;
 const { sponsor } = Astro.params;
 
-const sponsorData = data.sponsors.find((s) => s.name === sponsor);
+const sponsorData = data.sponsors.find((s) => slugify(s.name) === sponsor);
 
 if (!sponsorData || sponsorData.hasFeaturedPage === false) {
   return Astro.rewrite("/404");
@@ -28,13 +29,18 @@ const jsonLd = [
     { name: sponsorData.name, url: pageUrl },
   ]),
 ];
+
+const seoTitle = `${sponsorData.name} — Sponsor de ${data.title}`;
+const seoDescription = sponsorData.description
+  ? sponsorData.description
+  : `${sponsorData.name} es uno de los patrocinadores de ${data.title}, el festival tech de la Costa del Sol. Descubre sus ofertas de trabajo y proyectos.`;
 ---
 
 <Layout
-  title={`${sponsorData.name} | ${data.title}`}
-  description={sponsorData.description}
+  title={seoTitle}
+  description={seoDescription}
   image={sponsorData.picture}
-  ogType="article"
+  ogType="website"
   jsonLd={jsonLd}
   lang="es"
 >
@@ -46,7 +52,7 @@ const jsonLd = [
         transition:name={sponsorData.name}
         class="mx-auto w-full h-full object-contain max-h-[300px]"
         src={sponsorData.picture}
-        alt={sponsorData.name}
+        alt={`Logo de ${sponsorData.name}, sponsor de ${data.title}`}
         height={400}
         width={400}
       />

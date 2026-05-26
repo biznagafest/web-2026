@@ -31,11 +31,18 @@ const jsonLd = [
     { name: speakerData.name, url: pageUrl },
   ]),
 ];
+
+const seoTitle = speakerData.position
+  ? `${speakerData.name} — ${speakerData.position} · Speaker en ${data.title}`
+  : `${speakerData.name} · Speaker en ${data.title}`;
+const seoDescription = speakerData.description
+  ? speakerData.description
+  : `${speakerData.name}${speakerData.position ? `, ${speakerData.position},` : ""} dará una charla en ${data.title}. Conoce su perfil y su sesión en el festival tech de la Costa del Sol.`;
 ---
 
 <Layout
-  title={`${speakerData.name} | ${data.title}`}
-  description={speakerData.description}
+  title={seoTitle}
+  description={seoDescription}
   image={speakerData.picture}
   ogType="profile"
   jsonLd={jsonLd}
@@ -52,7 +59,7 @@ const jsonLd = [
               transition:name={`picture-speaker-${slug}`}
               class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
               src={speakerData.picture}
-              alt={`Picture of ${speakerData.name}`}
+              alt={`Foto de ${speakerData.name}${speakerData.position ? `, ${speakerData.position}` : ""}, speaker en ${data.title}`}
               height={320}
               width={320}
             />

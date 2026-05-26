@@ -9,20 +9,38 @@ const hasSchedule = !!data.schedule.length;
 if (!hasSchedule) {
   return Astro.rewrite("/404");
 }
+
+const heroDateFormatter = new Intl.DateTimeFormat("es-ES", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+});
+const dateLabel =
+  data.date instanceof Date ? heroDateFormatter.format(data.date) : "";
 ---
 
 <Layout
-  title={`Agenda | ${data.title}`}
-  description="Agenda completa del BiznagaFest 2026: charlas, workshops, ponentes y horarios de la jornada IT en la Costa del Sol."
+  title={`Agenda — Charlas y workshops · ${data.title}`}
+  description={`Agenda completa del ${data.title}${dateLabel ? ` (${dateLabel})` : ""}: charlas, workshops, ponentes y horarios de la jornada tech en la Costa del Sol.`}
   lang="es"
 >
   <main class="p-6">
-    <section id="schedules">
+    <section id="schedules" aria-labelledby="schedule-title">
       <div class="wrapper-x gap-16 flex flex-col">
-        <AnimatedOnViewportEnter
-          animation="animate-fade-in-left"
-        >
-          <h2 class="text-3xl font-bold text-center md:text-left">Schedule</h2>
+        <AnimatedOnViewportEnter animation="animate-fade-in-left">
+          <header class="flex flex-col gap-2 text-center md:text-left">
+            <h1
+              id="schedule-title"
+              class="font-heading text-4xl md:text-5xl font-bold uppercase text-text-primary"
+            >
+              Agenda {data.title}
+            </h1>
+            {dateLabel && (
+              <p class="font-display text-sm md:text-base text-text-secondary uppercase tracking-pixel">
+                {dateLabel}
+              </p>
+            )}
+          </header>
         </AnimatedOnViewportEnter>
         <Schedule data={data.schedule} />
       </div>

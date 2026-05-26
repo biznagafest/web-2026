@@ -29,11 +29,18 @@ const jsonLd = [
     { name: organizerData.name, url: pageUrl },
   ]),
 ];
+
+const seoTitle = organizerData.position
+  ? `${organizerData.name} — ${organizerData.position} · Organización ${data.title}`
+  : `${organizerData.name} · Organización ${data.title}`;
+const seoDescription = organizerData.description
+  ? organizerData.description
+  : `${organizerData.name} forma parte del equipo organizador de ${data.title}, el festival tech de la Costa del Sol.`;
 ---
 
 <Layout
-  title={`${organizerData.name} | ${data.title}`}
-  description={organizerData.description}
+  title={seoTitle}
+  description={seoDescription}
   image={organizerData.picture}
   ogType="profile"
   jsonLd={jsonLd}
@@ -50,7 +57,7 @@ const jsonLd = [
               transition:name={`picture-organizer-${slug}`}
               class="w-full rounded-md border-2 border-border-highlight aspect-square object-cover"
               src={organizerData.picture}
-              alt={`Picture of ${organizerData.name}`}
+              alt={`Foto de ${organizerData.name}${organizerData.position ? `, ${organizerData.position}` : ""}, organizador de ${data.title}`}
               loading="eager"
               height={320}
               width={320}

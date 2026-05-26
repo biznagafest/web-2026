@@ -10,44 +10,73 @@ function xmlEscape(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
+type SitemapEntry = {
+  loc: string;
+  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  priority?: number;
+};
+
 export const GET: APIRoute = ({ locals, site, url }) => {
   const data = locals.data;
   const baseUrl = site ?? new URL("/", url);
+  const today = new Date().toISOString().slice(0, 10);
 
-  const urls = new Set<string>();
-  urls.add(new URL("/", baseUrl).toString());
-  urls.add(new URL("/code", baseUrl).toString());
+  const entries = new Map<string, SitemapEntry>();
+  const add = (path: string, opts: Omit<SitemapEntry, "loc"> = {}) => {
+    const loc = new URL(path, baseUrl).toString();
+    if (entries.has(loc)) return;
+    entries.set(loc, { loc, ...opts });
+  };
+
+  add("/", { changefreq: "daily", priority: 1.0 });
+  add("/code", { changefreq: "yearly", priority: 0.3 });
   if (data.schedule?.length) {
-    urls.add(new URL("/schedule", baseUrl).toString());
+    add("/schedule", { changefreq: "weekly", priority: 0.9 });
   }
   if (data.raffles?.length) {
-    urls.add(new URL("/raffles", baseUrl).toString());
+    add("/raffles", { changefreq: "weekly", priority: 0.6 });
   }
   for (const speaker of data.speakers ?? []) {
-    urls.add(new URL(`/speaker/${slugify(speaker.name)}`, baseUrl).toString());
+    add(`/speaker/${slugify(speaker.name)}`, {
+      changefreq: "monthly",
+      priority: 0.7,
+    });
   }
   for (const host of data.hosts ?? []) {
-    urls.add(new URL(`/host/${slugify(host.name)}`, baseUrl).toString());
+    add(`/host/${slugify(host.name)}`, {
+      changefreq: "monthly",
+      priority: 0.5,
+    });
   }
   for (const organizer of data.team?.organizers ?? []) {
-    urls.add(
-      new URL(`/organizer/${slugify(organizer.name)}`, baseUrl).toString(),
-    );
+    add(`/organizer/${slugify(organizer.name)}`, {
+      changefreq: "monthly",
+      priority: 0.4,
+    });
   }
   for (const staff of data.team?.staff ?? []) {
-    urls.add(new URL(`/staff/${slugify(staff.name)}`, baseUrl).toString());
+    add(`/staff/${slugify(staff.name)}`, {
+      changefreq: "monthly",
+      priority: 0.3,
+    });
   }
   for (const sponsor of data.sponsors ?? []) {
     if (sponsor.hasFeaturedPage === false) continue;
-    urls.add(
-      new URL(`/sponsor/${encodeURIComponent(sponsor.name)}`, baseUrl).toString(),
-    );
+    add(`/sponsor/${slugify(sponsor.name)}`, {
+      changefreq: "monthly",
+      priority: 0.6,
+    });
   }
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...urls]
-  .map((loc) => `  <url><loc>${xmlEscape(loc)}</loc></url>`)
+${[...entries.values()]
+  .map((entry) => {
+    const parts = [`<loc>${xmlEscape(entry.loc)}</loc>`, `<lastmod>${today}</lastmod>`];
+    if (entry.changefreq) parts.push(`<changefreq>${entry.changefreq}</changefreq>`);
+    if (entry.priority !== undefined) parts.push(`<priority>${entry.priority.toFixed(1)}</priority>`);
+    return `  <url>${parts.join("")}</url>`;
+  })
   .join("\n")}
 </urlset>`;
 
