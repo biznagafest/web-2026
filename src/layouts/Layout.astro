@@ -41,7 +41,9 @@ const {
     <div class="min-h-screen flex flex-col justify-between">
       <div>
         <Navigation />
-        <slot />
+        <main id="main">
+          <slot />
+        </main>
       </div>
       <ButtonUp class="fixed bottom-4 right-4 z-30" />
       <Footer />

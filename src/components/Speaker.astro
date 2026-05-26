@@ -12,7 +12,6 @@ const slug = slugify(speaker.name);
 ---
 
 <a
-  aria-label={`Go to ${speaker.name}'s profile`}
   href={`/speaker/${slug}`}
   data-astro-history="push"
   data-umami-event="speaker_profile_click"
@@ -24,7 +23,7 @@ const slug = slugify(speaker.name);
   >
     <Image
       src={speaker.picture}
-      alt={`Picture of ${speaker.name}`}
+      alt=""
       class="absolute inset-0 h-full w-full object-cover transition-transform duration-500"
       style="-webkit-user-drag: none;"
       height={240}

@@ -12,7 +12,7 @@ const { data } = Astro.locals;
   >
     <div class="flex flex-col items-center md:items-start gap-4">
       <a
-        aria-label="Go to Home Page"
+        aria-label="Ir a la página de inicio"
         href="/"
         data-umami-event="footer_logo_click"
         class="block"
@@ -44,7 +44,6 @@ const { data } = Astro.locals;
           data.footerLinks.map((link) => (
             <li>
               <a
-                aria-label={`Go to ${link.title} Page`}
                 class="font-sans text-sm text-text-primary/85 hover:text-accent-yellow transition-colors"
                 href={link.href}
                 data-umami-event="footer_link_click"
@@ -67,7 +66,7 @@ const { data } = Astro.locals;
             {data.previousEditions.map((prevEd) => (
               <li>
                 <a
-                  aria-label={`Go to ${prevEd.name} Page`}
+                  aria-label={`Edición ${prevEd.name}`}
                   href={prevEd.url}
                   data-umami-event="footer_previous_edition_click"
                   class="inline-flex items-center justify-center rounded-sm border border-border px-2.5 py-1 font-display text-[10px] text-text-primary/80 hover:border-accent-yellow hover:text-accent-yellow transition-colors"

@@ -108,6 +108,7 @@ const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
         layout="full-width"
         loading="eager"
         fetchpriority="high"
+        quality={45}
       />
     </div>
     <div
@@ -338,7 +339,10 @@ const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
             </div>
           </AnimatedOnViewportEnter>
           {!!data.companyTicketsNotice.enabled && (
-            <div class="mt-4 mx-auto max-w-3xl relative overflow-hidden rounded-md border border-border-highlight/40 bg-surface-card shadow-[0_4px_16px_rgba(0,0,0,0.45)]">
+            <aside
+              aria-labelledby="company-tickets-notice-title"
+              class="mt-4 mx-auto max-w-3xl relative overflow-hidden rounded-md border border-border-highlight/40 bg-surface-card shadow-[0_4px_16px_rgba(0,0,0,0.45)]"
+            >
               <span
                 aria-hidden="true"
                 class="absolute top-0 left-0 h-[3px] w-full bg-gradient-to-r from-action-secondary via-accent-blue to-accent-yellow"
@@ -351,7 +355,10 @@ const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
                   <span class="font-display text-[10px] uppercase tracking-pixel text-accent-blue">
                     Co-op Mode
                   </span>
-                  <h3 class="font-heading text-xl md:text-2xl font-bold uppercase text-text-primary tracking-wide leading-tight">
+                  <h3
+                    id="company-tickets-notice-title"
+                    class="font-heading text-xl md:text-2xl font-bold uppercase text-text-primary tracking-wide leading-tight"
+                  >
                     {data.companyTicketsNotice.title}
                   </h3>
                   <div class="font-sans text-sm md:text-base text-text-primary/85 leading-relaxed [&_a]:text-accent-yellow [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-accent-blue [&_a]:transition-colors">
@@ -359,7 +366,7 @@ const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
                   </div>
                 </div>
               </div>
-            </div>
+            </aside>
           )}
 
           {data.tshirt && (

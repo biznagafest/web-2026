@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import "@phosphor-icons/web/regular";
 
+/* Override Phosphor's @font-face to use font-display: swap.
+   Last @font-face wins for matching family/weight/style key. */
+@font-face {
+  font-family: "Phosphor";
+  src: url("/fonts/Phosphor.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* Clear default palette so only the brand colors are available. */
   --color-*: initial;

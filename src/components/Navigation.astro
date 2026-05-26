@@ -23,7 +23,7 @@ const featuredSponsors = data.sponsors.filter(
   >
     <div class="flex items-center justify-between w-full xl:w-auto">
       <a
-        aria-label="Go to Home Page"
+        aria-label="Ir a la página de inicio"
         href="/"
         data-umami-event="nav_logo_click"
         class="flex items-center gap-3"
@@ -60,7 +60,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.schedule.length && (
             <li>
               <a
-                aria-label="Go to Schedule"
                 href="/#schedule"
                 data-umami-event="nav_schedule_click"
                 class="block px-3 py-2 rounded-sm text-text-primary hover:text-accent-yellow hover:bg-surface-card transition-colors"
@@ -74,7 +73,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.speakers.length && (
             <li>
               <a
-                aria-label="Go to Speakers"
                 href="/#speakers"
                 data-umami-event="nav_speakers_click"
                 class="block px-3 py-2 rounded-sm text-text-primary hover:text-accent-yellow hover:bg-surface-card transition-colors"
@@ -88,7 +86,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.tickets.length && (
             <li>
               <a
-                aria-label="Go to Tickets"
                 href="/#tickets"
                 data-umami-event="nav_tickets_click"
                 class="block px-3 py-2 rounded-sm text-text-primary hover:text-accent-yellow hover:bg-surface-card transition-colors"
@@ -102,7 +99,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.sponsors.length && (
             <li>
               <a
-                aria-label="Go to Sponsors"
                 href="/#sponsors"
                 data-umami-event="nav_sponsors_click"
                 class="block px-3 py-2 rounded-sm text-text-primary hover:text-accent-yellow hover:bg-surface-card transition-colors"
@@ -116,7 +112,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.raffles.length && (
             <li>
               <a
-                aria-label="Go to Raffles Page"
                 href="/raffles"
                 data-umami-event="nav_raffles_click"
                 class="block px-3 py-2 rounded-sm text-text-primary hover:text-accent-yellow hover:bg-surface-card transition-colors"
@@ -130,7 +125,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.faq.length && (
             <li>
               <a
-                aria-label="Go to FAQ"
                 href="/#faq"
                 data-umami-event="nav_faq_click"
                 class="block px-3 py-2 rounded-sm text-text-primary hover:text-accent-yellow hover:bg-surface-card transition-colors"
@@ -144,7 +138,6 @@ const featuredSponsors = data.sponsors.filter(
           !!data.sponsorsDossier.enabled && (
             <li class="xl:ml-2">
               <a
-                aria-label="Go to Sponsors Dossier"
                 href="/#callForSponsors"
                 data-umami-event="sponsor_cta_click"
                 class="block px-3 py-2 rounded-sm font-display text-[10px] uppercase tracking-pixel text-accent-yellow hover:text-white transition-colors"
@@ -158,7 +151,7 @@ const featuredSponsors = data.sponsors.filter(
           featuredSponsors.map((sponsor) => (
             <li>
               <a
-                aria-label={`Go to ${sponsor.name} Page`}
+                aria-label={`Conoce a ${sponsor.name}`}
                 href={`/sponsor/${encodeURIComponent(sponsor.name)}`}
                 data-umami-event="nav_sponsor_click"
                 class="block px-3 py-2 rounded-sm text-text-secondary hover:text-accent-yellow transition-colors"

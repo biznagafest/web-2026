@@ -24,7 +24,7 @@ const cardHeight = tierHeights[sponsor.tier];
 ---
 
 <a
-  aria-label={`Visit ${sponsor.name}'s website`}
+  aria-label={`Visita la web de ${sponsor.name}`}
   href={sponsor.hasFeaturedPage ? `/sponsor/${encodeURIComponent(sponsor.name)}` : sponsor.url}
   data-umami-event="sponsor_link_click"
   target={sponsor.hasFeaturedPage ? undefined : "_blank"}

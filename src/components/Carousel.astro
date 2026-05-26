@@ -1,6 +1,9 @@
 ---
 import { Image } from "astro:assets";
-import "swiper/css/bundle";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 
 interface Props {
   images: ReadonlyArray<string>;
@@ -78,10 +81,14 @@ const {
   {scrollbar && <div class="swiper-scrollbar" />}
 </div>
 <script>
-  import Swiper from "swiper/bundle";
+  import Swiper from "swiper";
+  import { Navigation, Pagination, Scrollbar } from "swiper/modules";
 
   function init() {
-    const swiper = new Swiper(".swiper", {
+    const el = document.querySelector(".swiper");
+    if (!el) return;
+    new Swiper(".swiper", {
+      modules: [Navigation, Pagination, Scrollbar],
       loop: true,
       pagination: {
         el: ".swiper-pagination",

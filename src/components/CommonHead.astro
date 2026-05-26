@@ -42,6 +42,11 @@ if (ticketsUrl) {
 ---
 
 <head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  />
   <ClientRouter />
   <!--
     Defensive history sync: ClientRouter occasionally completes the DOM swap without
@@ -122,36 +127,35 @@ if (ticketsUrl) {
       <>
         <link rel="preconnect" href={pretixOrigin} crossorigin />
         <link
-          rel="stylesheet"
-          type="text/css"
+          rel="preload"
+          as="style"
           href={pretixCssHref}
           crossorigin
+          onload="this.onload=null;this.rel='stylesheet'"
         />
+        <noscript>
+          <link rel="stylesheet" href={pretixCssHref} crossorigin />
+        </noscript>
         <script
           type="text/javascript"
           src={pretixJsHref}
           async
           crossorigin="anonymous"
         />
-        <style>
-          {`@media (max-width: 480px) {
+        <style is:global>
+          @media (max-width: 480px) {
             .pretix-widget-frame-inner,
             .pretix-widget-lightbox-inner,
             .pretix-widget-alert-box {
               height: 100dvh;
             }
-          }`}
+          }
         </style>
       </>
     )
   }
 
   <!-- Global Metadata -->
-  <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover"
-  />
   <meta name="generator" content={Astro.generator} />
   <meta name="theme-color" content="#000046" />
   <meta name="color-scheme" content="dark" />
