@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
 import { slugify } from "../utils/slug";
 
-const STATIC_PATHS = ["/", "/schedule", "/raffles", "/code"];
-
 function xmlEscape(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -17,8 +15,13 @@ export const GET: APIRoute = ({ locals, site, url }) => {
   const baseUrl = site ?? new URL("/", url);
 
   const urls = new Set<string>();
-  for (const path of STATIC_PATHS) {
-    urls.add(new URL(path, baseUrl).toString());
+  urls.add(new URL("/", baseUrl).toString());
+  urls.add(new URL("/code", baseUrl).toString());
+  if (data.schedule?.length) {
+    urls.add(new URL("/schedule", baseUrl).toString());
+  }
+  if (data.raffles?.length) {
+    urls.add(new URL("/raffles", baseUrl).toString());
   }
   for (const speaker of data.speakers ?? []) {
     urls.add(new URL(`/speaker/${slugify(speaker.name)}`, baseUrl).toString());
