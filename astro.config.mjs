@@ -21,11 +21,14 @@ const cmsRemotePattern = (() => {
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://biznagafest.com",
+  site: "https://www.biznagafest.com",
   integrations: [preact()],
   output: "server",
   adapter: node({ mode: "standalone" }),
   prefetch: { prefetchAll: true, defaultStrategy: "viewport" },
+  security: {
+    checkOrigin: false,
+  },
   vite: {
     plugins: [tailwindcss()],
   },
