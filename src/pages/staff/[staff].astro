@@ -4,6 +4,7 @@ import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
 import Layout from "../../layouts/Layout.astro";
 import { slugify } from "../../utils/slug";
+import { buildBreadcrumbJsonLd, buildPersonJsonLd } from "../../utils/json-ld";
 
 const { data } = Astro.locals;
 const { staff } = Astro.params;
@@ -15,11 +16,25 @@ if (!staffData) {
 }
 
 const slug = slugify(staffData.name);
+
+const baseUrl = Astro.site ?? Astro.url;
+const pageUrl = new URL(Astro.url.pathname, baseUrl);
+const jsonLd = [
+  buildPersonJsonLd(staffData, pageUrl, baseUrl),
+  buildBreadcrumbJsonLd([
+    { name: "Inicio", url: new URL("/", baseUrl) },
+    { name: "Voluntarios", url: new URL("/#staff", baseUrl) },
+    { name: staffData.name, url: pageUrl },
+  ]),
+];
 ---
 
 <Layout
   title={`${staffData.name} | ${data.title}`}
   description={staffData.description}
+  image={staffData.picture}
+  ogType="profile"
+  jsonLd={jsonLd}
   lang="es"
 >
   <main class="flex flex-col gap-12 min-h-screen mx-auto max-w-[1240px] px-6 py-16 md:py-24">

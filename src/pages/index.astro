@@ -20,7 +20,7 @@ import SectionHeader from "../components/SectionHeader.astro";
 import StatCard from "../components/StatCard.astro";
 import SponsorsCta from "../components/SponsorsCta.astro";
 import SponsorForm from "../components/integrations/preact/components/SponsorForm";
-import { buildEventJsonLd } from "../utils/json-ld";
+import { buildEventJsonLd, buildFaqJsonLd } from "../utils/json-ld";
 
 const { data } = Astro.locals;
 
@@ -85,7 +85,11 @@ const heroStats = [
   { value: "+120", label: "Horas de contenido tech" },
 ];
 
-const jsonLd = buildEventJsonLd(data, Astro.site ?? Astro.url);
+const baseUrl = Astro.site ?? Astro.url;
+const jsonLd: Array<Record<string, unknown>> = [buildEventJsonLd(data, baseUrl)];
+if (data.faq?.length) {
+  jsonLd.push(buildFaqJsonLd(data.faq));
+}
 ---
 
 <Layout

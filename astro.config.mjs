@@ -2,14 +2,7 @@ import { defineConfig, envField, fontProviders } from "astro/config";
 import { loadEnv } from "vite";
 import node from "@astrojs/node";
 import preact from "@astrojs/preact";
-import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
-
-const SITEMAP_EXCLUDED_PATTERNS = [
-  /\/api(\/|$)/,
-  /\/404\/?$/,
-  /\/(speaker|host|organizer|staff|sponsor)\//,
-];
 
 const env = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
 const cmsRemotePattern = (() => {
@@ -29,13 +22,7 @@ const cmsRemotePattern = (() => {
 // https://astro.build/config
 export default defineConfig({
   site: "https://biznagafest.com",
-  integrations: [
-    preact(),
-    sitemap({
-      filter: (page) =>
-        !SITEMAP_EXCLUDED_PATTERNS.some((pattern) => pattern.test(page)),
-    }),
-  ],
+  integrations: [preact()],
   output: "server",
   adapter: node({ mode: "standalone" }),
   prefetch: { prefetchAll: true, defaultStrategy: "viewport" },

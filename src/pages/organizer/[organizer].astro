@@ -4,6 +4,7 @@ import RichText from "../../components/RichText.astro";
 import Socials from "../../components/Socials.astro";
 import Layout from "../../layouts/Layout.astro";
 import { slugify } from "../../utils/slug";
+import { buildBreadcrumbJsonLd, buildPersonJsonLd } from "../../utils/json-ld";
 
 const { data } = Astro.locals;
 const { organizer } = Astro.params;
@@ -17,11 +18,25 @@ if (!organizerData) {
 }
 
 const slug = slugify(organizerData.name);
+
+const baseUrl = Astro.site ?? Astro.url;
+const pageUrl = new URL(Astro.url.pathname, baseUrl);
+const jsonLd = [
+  buildPersonJsonLd(organizerData, pageUrl, baseUrl),
+  buildBreadcrumbJsonLd([
+    { name: "Inicio", url: new URL("/", baseUrl) },
+    { name: "Equipo", url: new URL("/#team", baseUrl) },
+    { name: organizerData.name, url: pageUrl },
+  ]),
+];
 ---
 
 <Layout
   title={`${organizerData.name} | ${data.title}`}
   description={organizerData.description}
+  image={organizerData.picture}
+  ogType="profile"
+  jsonLd={jsonLd}
   lang="es"
 >
   <main class="flex flex-col gap-12 min-h-screen mx-auto max-w-[1240px] px-6 py-16 md:py-24">

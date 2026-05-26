@@ -15,6 +15,7 @@ export interface Props {
   description?: Nullish<string>;
   image?: string;
   noIndex?: boolean;
+  ogType?: "website" | "article" | "profile";
   jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
@@ -24,6 +25,7 @@ const {
   description,
   image,
   noIndex,
+  ogType,
   jsonLd,
 } = Astro.props;
 ---
@@ -35,6 +37,7 @@ const {
     description={description ?? ""}
     image={image}
     noIndex={noIndex}
+    ogType={ogType}
     jsonLd={jsonLd}
   />
   <body class="bg-surface-page text-text-primary antialiased">
