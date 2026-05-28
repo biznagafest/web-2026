@@ -39,10 +39,18 @@ export function buildEventJsonLd(
     : "";
 
   const description = stripMarkdown(data.description ?? "");
-  const performer = (data.speakers ?? []).map((s) => ({
+  const speakerPerformers = (data.speakers ?? []).map((s) => ({
     "@type": "Person",
     name: s.name,
   }));
+  const performer = speakerPerformers.length
+    ? speakerPerformers
+    : [
+        {
+          "@type": "PerformingGroup",
+          name: data.title,
+        },
+      ];
   const minTicketPrice = (data.tickets ?? [])
     .map((t) => t.price)
     .filter((p): p is number => typeof p === "number" && p >= 0)
@@ -90,7 +98,7 @@ export function buildEventJsonLd(
           },
         }
       : {}),
-    ...(performer.length ? { performer } : {}),
+    performer,
   };
 }
 
