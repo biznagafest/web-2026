@@ -124,8 +124,12 @@ if (ticketsUrl) {
     })();
   </script>
 
+  {/* Only preload fonts used above the fold (hero eyebrow/date use the display
+     font, CTAs/body use the sans font). The heading font (Rajdhani) is only used
+     for section titles further down the page, so preloading it would needlessly
+     compete with the LCP image for bandwidth — it still loads via @font-face. */}
   <Font cssVariable="--font-sans" preload />
-  <Font cssVariable="--font-heading" preload />
+  <Font cssVariable="--font-heading" />
   <Font cssVariable="--font-display" preload />
 
   {
