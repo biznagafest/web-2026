@@ -48,14 +48,16 @@ const seoDescription = sponsorData.description
     <header
       class="rounded-md border border-border bg-surface-card p-8 md:p-12"
     >
-      <Image
-        transition:name={sponsorData.name}
-        class="mx-auto w-full h-full object-contain max-h-[300px]"
-        src={sponsorData.picture}
-        alt={`Logo de ${sponsorData.name}, sponsor de ${data.title}`}
-        height={400}
-        width={400}
-      />
+      <div class="rounded-sm bg-[#f4f5fb] p-6 md:p-8">
+        <Image
+          transition:name={sponsorData.name}
+          class="mx-auto w-full h-full object-contain max-h-[300px]"
+          src={sponsorData.picture}
+          alt={`Logo de ${sponsorData.name}, sponsor de ${data.title}`}
+          height={400}
+          width={400}
+        />
+      </div>
     </header>
     {
       !!sponsorData.description !== undefined && (
