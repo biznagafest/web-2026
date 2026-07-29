@@ -104,12 +104,7 @@ const seoTitle = `${data.title} — Festival Tech en ${eventCity} · ${heroDateL
 const seoDescription = `Conferencia tech de la Costa del Sol el ${heroDateLabel.toLowerCase()} en ${data.venue?.title ?? eventCity}. Charlas y workshops sobre DevOps, Backend, Frontend, IA, Chatbots y Blockchain. Speakers de Google, Red Hat, Docker y más. ¡Consigue tu entrada!`;
 ---
 
-<Layout
-  title={seoTitle}
-  description={seoDescription}
-  lang="es"
-  jsonLd={jsonLd}
->
+<Layout title={seoTitle} description={seoDescription} lang="es" jsonLd={jsonLd}>
   <!-- Hero -->
   <section id="hero" class="relative overflow-hidden bg-surface-page">
     <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
@@ -131,22 +126,20 @@ const seoDescription = `Conferencia tech de la Costa del Sol el ${heroDateLabel.
       class="relative mx-auto max-w-[1240px] flex flex-col items-center text-center gap-8 px-6 py-24 md:py-32"
     >
       <span
-        class="font-display text-[10px] md:text-xs uppercase tracking-pixel text-text-secondary"
+        class="font-display text-[10px] text-xs md:text-sm uppercase tracking-pixel text-text-secondary"
       >
         Costa del Sol · Tech Festival
       </span>
       <h1 class="w-full max-w-[1140px]">
-        <BiznagaWordmark
-          aria-hidden="true"
-          role="img"
-          class="w-full h-auto"
-        />
+        <BiznagaWordmark aria-hidden="true" role="img" class="w-full h-auto" />
         <span class="sr-only">
-          {data.title} — Festival Tech de la Costa del Sol en {eventCity}, {eventYear}
+          {data.title} — Festival Tech de la Costa del Sol en {eventCity}, {
+            eventYear
+          }
         </span>
       </h1>
       <div
-        class="font-display text-base md:text-xl text-text-primary flex flex-col gap-2"
+        class="font-display text-xs sm:text-sm md:text-xl leading-relaxed text-text-primary flex flex-col gap-2"
       >
         <p>{heroDateLabel}</p>
         <p>{data.venue.title}</p>
