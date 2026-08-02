@@ -20,7 +20,20 @@ const tierHeights: Record<SponsorTier, string> = {
   supporter: "h-10 md:h-12",
 };
 
+const tierPaddings: Record<SponsorTier, string> = {
+  platinum: "px4 py-3",
+  gold: "px-4 py-3",
+  silver: "px-3 py-2",
+  bronze: "px-3 py-2",
+  communitySponsor: "px-3 py-2",
+  media: "px-2 py-1",
+  food: "px-2 py-1",
+  community: "px-2 py-1",
+  supporter: "px-2 py-1",
+};
+
 const cardHeight = tierHeights[sponsor.tier];
+const cardPadding = tierPaddings[sponsor.tier];
 ---
 
 <a
@@ -32,7 +45,7 @@ const cardHeight = tierHeights[sponsor.tier];
   class="group flex items-center justify-center rounded-md border border-border bg-surface-card/60 p-3 transition-all duration-300 hover:border-border-highlight w-full"
 >
   <span
-    class="flex w-full items-center justify-center rounded-sm bg-[#f4f5fb] px-4 py-3 transition-colors duration-300 group-hover:bg-white"
+    class:list={["flex w-full items-center justify-center rounded-sm bg-[#f4f5fb] transition-colors duration-300 group-hover:bg-white", cardPadding]}
   >
     <img
       src={sponsor.picture}
