@@ -8,10 +8,11 @@ interface Props {
 
 const { data } = Astro.props;
 
-type Variant = "lecture" | "workshop" | "break";
+type Variant = "lecture" | "workshop" | "round-table" | "break";
 
 function variantOf(item: ScheduleItem): Variant {
   if (item.kind === "break") return "break";
+  if (item.type === "round-table") return "round-table";
   return item.type === "workshop" ? "workshop" : "lecture";
 }
 
@@ -38,6 +39,13 @@ const variantStyles: Record<
     typeTagBg: "bg-accent-blue",
     typeTagText: "text-text-inverse",
     typeLabel: "TALLER",
+  },
+  "round-table": {
+    accentBar: "bg-accent-green",
+    cardBg: "bg-surface-card",
+    typeTagBg: "bg-accent-green",
+    typeTagText: "text-text-inverse",
+    typeLabel: "MESA REDONDA",
   },
   break: {
     accentBar: "bg-accent-yellow",

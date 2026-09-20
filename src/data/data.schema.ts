@@ -127,7 +127,7 @@ export const LastEditionSchema = z.object({
 
 export const ScheduleItemSchema = z.object({
   kind: z.enum(["break", "nobreak", "half-divider"]),
-  type: z.enum(["lecture", "workshop"]).nullish(),
+  type: z.enum(["lecture", "workshop", "round-table"]).nullish(),
   start: z.string(),
   end: z.string(),
   title: z.string(),

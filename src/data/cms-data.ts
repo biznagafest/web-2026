@@ -49,7 +49,7 @@ interface Raffleitem {
 
 interface ScheduleItem {
   kind: "break" | "nobreak" | "half-divider";
-  type: Nullable<"lecture" | "workshop">;
+  type: Nullable<"lecture" | "workshop" | "round-table">;
   time_start: string;
   time_end: string;
   title: string;
